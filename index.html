@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartas QM - KIRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Inter:wght@300;400;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4ede0;
+  --bg2: #ebe1ce;
+  --surface: #fdfaf3;
+  --surface2: #f7f0e3;
+  --gold: #b8860b;
+  --gold2: #9c7209;
+  --terra: #c17a54;
+  --terra-soft: #d9a982;
+  --ink: #4a3c2a;
+  --ink2: #7a6a52;
+  --ink3: #a89878;
+  --heaven: #a0341e;
+  --earth: #5a3d1e;
+  --green: #4a7c3f;
+  --green-bg: rgba(74,124,63,.10);
+  --red: #b04a32;
+  --red-bg: rgba(176,74,50,.08);
+  --amber: #b8860b;
+  --amber-bg: rgba(184,134,11,.08);
+  --border: rgba(184,134,11,.22);
+  --pal-bg: #fffdf8;
+  --pal-bg2: #fdf8ee;
+  --pal-border: #e0cfa8;
+  --shadow: rgba(120,90,40,.10);
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse at 25% 15%, rgba(217,169,130,.18) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 85%, rgba(184,134,11,.10) 0%, transparent 50%);
+  min-height:100vh;
+  font-family:'Inter',sans-serif;
+  color:var(--ink);
+  padding:14px;
+}
+
+/* HEADER */
+.hdr { text-align:center; padding:22px 0 16px; }
+.hdr-cn { font-family:'Noto Serif SC',serif; color:var(--gold); font-size:clamp(2rem,6vw,3.2rem); letter-spacing:.35em; font-weight:700; opacity:.85; }
+.hdr-title { font-family:'Cormorant Garamond',serif; color:var(--terra); font-size:clamp(1rem,2.5vw,1.5rem); letter-spacing:.22em; margin-top:2px; font-weight:600; }
+.hdr-sub { font-size:.72rem; color:var(--ink2); margin-top:4px; letter-spacing:.1em; }
+
+/* CONTROL BAR */
+.ctrl { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px 18px; max-width:920px; margin:0 auto 16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; align-items:end; box-shadow:0 4px 20px var(--shadow); }
+.fg label { display:block; font-size:.68rem; color:var(--gold2); letter-spacing:.06em; margin-bottom:5px; text-transform:uppercase; font-weight:600; }
+.fg input, .fg select { background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--ink); font-family:'Inter',sans-serif; font-size:.85rem; padding:8px 11px; outline:none; width:100%; transition:all .2s; }
+.fg input:focus, .fg select:focus { border-color:var(--gold); background:#fff; box-shadow:0 0 0 3px rgba(184,134,11,.08); }
+.btn-plot { background:linear-gradient(135deg,var(--terra),#a85f3c); border:none; border-radius:10px; color:#fff; font-family:'Cormorant Garamond',serif; font-size:.95rem; font-weight:700; letter-spacing:.06em; padding:10px 18px; cursor:pointer; transition:all .25s; align-self:end; width:100%; box-shadow:0 3px 12px rgba(193,122,84,.3); }
+.btn-plot:hover { filter:brightness(1.08); transform:translateY(-1px); box-shadow:0 5px 18px rgba(193,122,84,.4); }
+
+/* TABS */
+.tabs { display:flex; justify-content:center; gap:3px; max-width:920px; margin:0 auto; }
+.tab { background:var(--surface2); border:1px solid var(--border); border-bottom:none; border-radius:10px 10px 0 0; color:var(--ink3); font-size:.78rem; font-weight:600; padding:8px 18px; cursor:pointer; letter-spacing:.03em; transition:all .2s; }
+.tab.on { background:var(--surface); color:var(--terra); border-color:var(--gold); box-shadow:0 -2px 8px var(--shadow); }
+.tab:hover:not(.on) { color:var(--ink2); }
+
+/* CHART WRAPPER */
+.cs { max-width:920px; margin:0 auto; }
+.cp { display:none; }
+.cp.on { display:block; animation:fade .4s ease; }
+@keyframes fade { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* 4 PILLARS */
+.pillars { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; margin-bottom:10px; display:grid; grid-template-columns:repeat(4,1fr); gap:8px; box-shadow:0 3px 14px var(--shadow); }
+.pb { text-align:center; padding:7px 4px; border-right:1px solid var(--border); }
+.pb:last-child { border-right:none; }
+.pb-type { font-size:.6rem; color:var(--gold2); letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px; font-weight:600; }
+.pb-stem { font-family:'Noto Serif SC',serif; font-size:1.4rem; font-weight:700; color:var(--ink); line-height:1; }
+.pb-en { font-size:.6rem; color:var(--ink2); margin-top:3px; }
+
+/* INFO BAR */
+.infobar { background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:11px 15px; margin-bottom:10px; display:flex; flex-wrap:wrap; gap:9px 22px; align-items:center; }
+.ib { display:flex; flex-direction:column; gap:1px; }
+.ib-l { font-size:.58rem; color:var(--ink3); letter-spacing:.08em; text-transform:uppercase; }
+.ib-v { font-size:.84rem; color:var(--ink); font-weight:600; }
+.ib-v.yang { color:var(--terra); }
+.ib-v.yin { color:#5a7a9c; }
+.ib-v.gold { color:var(--gold2); font-size:.95rem; }
+.ib-v.alert { color:var(--heaven); }
+
+/* COMPASS */
+.top-compass, .bot-compass { display:grid; grid-template-columns:1fr 1fr 1fr; background:var(--surface2); }
+.top-compass { border:1px solid var(--border); border-bottom:none; border-radius:12px 12px 0 0; }
+.bot-compass { border:1px solid var(--border); border-top:none; border-radius:0 0 12px 12px; }
+.tc { text-align:center; padding:7px 2px; font-size:.64rem; color:var(--gold2); font-weight:700; letter-spacing:.03em; border-right:1px solid var(--border); }
+.tc:last-child { border-right:none; }
+
+/* 9 PALACE GRID */
+.grid9 { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr 1fr; gap:3px; background:var(--bg2); border-left:1px solid var(--border); border-right:1px solid var(--border); padding:3px; }
+
+.pal { background:var(--pal-bg); border:1px solid var(--pal-border); border-radius:5px; display:grid; grid-template-rows:auto auto 1fr auto; padding:6px; position:relative; min-height:115px; overflow:hidden; transition:all .2s; }
+.pal:hover { background:var(--pal-bg2); z-index:2; box-shadow:0 3px 16px var(--shadow); transform:scale(1.01); }
+.pal.center { background:linear-gradient(135deg,#f5ecd8,#f0e4cc); border-style:dashed; }
+
+.pal-top { display:grid; grid-template-columns:auto 1fr; gap:4px; align-items:start; margin-bottom:3px; }
+.pal-hstem { font-family:'Noto Serif SC',serif; font-size:clamp(1.05rem,2.3vw,1.55rem); font-weight:900; color:var(--heaven); line-height:1; min-width:24px; text-align:center; }
+.pal-top-right { display:flex; flex-direction:column; gap:1px; align-items:flex-start; }
+.pal-deity { font-size:clamp(.52rem,1vw,.7rem); color:#7a4d8e; font-weight:600; line-height:1.2; }
+.pal-star { font-size:clamp(.48rem,.9vw,.64rem); color:#3a5a8e; line-height:1.2; }
+
+.pal-div { border-top:1px solid rgba(184,134,11,.18); margin:2px 0; }
+
+.pal-bot { display:grid; grid-template-columns:auto 1fr auto; gap:4px; align-items:end; }
+.pal-estem { font-family:'Noto Serif SC',serif; font-size:clamp(1.05rem,2.3vw,1.55rem); font-weight:900; color:var(--earth); line-height:1; min-width:24px; text-align:center; }
+.pal-door { font-size:clamp(.5rem,.95vw,.66rem); font-weight:700; line-height:1.2; align-self:end; }
+.pal-door.aus { color:var(--green); }
+.pal-door.inaus { color:var(--red); }
+.pal-door.neut { color:var(--amber); }
+.pal-num { font-size:clamp(1.5rem,3.2vw,2.3rem); font-weight:900; color:rgba(184,134,11,.2); line-height:1; align-self:end; }
+
+.pal-dir { position:absolute; top:4px; right:5px; font-size:.52rem; color:rgba(120,90,40,.5); font-weight:700; }
+.pal-trig { font-size:.54rem; color:rgba(120,90,40,.5); text-align:center; margin-bottom:1px; }
+
+.pal-markers { position:absolute; top:3px; left:3px; display:flex; flex-direction:column; gap:2px; }
+.mk { font-size:.48rem; padding:1px 4px; border-radius:3px; font-weight:700; line-height:1.3; }
+.mk-ls { background:#fbf0cc; color:#8a6608; border:1px solid var(--gold); }
+.mk-de { background:#ece4d4; color:#6a5638; border:1px solid var(--ink3); }
+.mk-envoy { background:#f5d8cc; color:#9a3a1e; border:1px solid var(--terra); }
+.mk-jia { background:#e8d5e8; color:#6a3a7a; border:1px solid #a87aa8; }
+
+/* DATOS */
+.datos { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px 18px; margin-top:12px; box-shadow:0 3px 14px var(--shadow); }
+.datos h3 { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--terra); letter-spacing:.1em; text-transform:uppercase; margin-bottom:11px; border-bottom:1px solid var(--border); padding-bottom:7px; font-weight:700; }
+.datos-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px 18px; }
+.dr { display:flex; align-items:baseline; gap:6px; }
+.dl { font-size:.64rem; color:var(--ink2); white-space:nowrap; }
+.dv { font-size:.8rem; color:var(--ink); font-weight:600; }
+
+/* ENERGY */
+.energy { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 18px; margin-top:12px; box-shadow:0 3px 14px var(--shadow); }
+.energy h3 { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--terra); letter-spacing:.1em; text-transform:uppercase; margin-bottom:9px; font-weight:700; }
+.energy-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; }
+.ec { display:flex; align-items:center; gap:5px; }
+.ec-l { font-size:.66rem; color:var(--ink2); }
+.ec-v { font-size:.95rem; }
+
+/* ZULEMA */
+.zulema { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:15px 18px; margin-top:12px; box-shadow:0 3px 14px var(--shadow); }
+.zulema h3 { font-family:'Cormorant Garamond',serif; font-size:1rem; color:var(--terra); letter-spacing:.1em; text-transform:uppercase; margin-bottom:11px; border-bottom:1px solid var(--border); padding-bottom:7px; font-weight:700; }
+.zt { margin-bottom:8px; padding:11px 13px; background:var(--surface2); border-radius:9px; border-left:3px solid var(--terra-soft); }
+.zt-header { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+.zt-stem { font-family:'Noto Serif SC',serif; font-size:1.4rem; font-weight:900; color:var(--ink); }
+.zt-role { font-size:.72rem; color:var(--gold2); font-weight:600; }
+.zt-loc { font-size:.72rem; color:var(--ink2); margin-left:auto; }
+
+/* LEGEND */
+.legend { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:13px 18px; margin-top:12px; display:flex; flex-wrap:wrap; gap:14px; box-shadow:0 3px 14px var(--shadow); }
+.lg-g { display:flex; flex-direction:column; gap:5px; }
+.lg-t { font-size:.6rem; color:var(--gold2); letter-spacing:.08em; text-transform:uppercase; font-weight:600; }
+.lg-items { display:flex; flex-wrap:wrap; gap:6px; }
+.lg-i { font-size:.64rem; color:var(--ink2); display:flex; align-items:center; gap:4px; }
+.lg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+/* COPY BUTTON */
+.copy-bar { max-width:920px; margin:14px auto 0; text-align:center; }
+.btn-copy { background:var(--surface); border:1px solid var(--gold); border-radius:10px; color:var(--gold2); font-family:'Cormorant Garamond',serif; font-size:.9rem; font-weight:700; letter-spacing:.05em; padding:10px 24px; cursor:pointer; transition:all .2s; }
+.btn-copy:hover { background:var(--gold); color:#fff; }
+
+@media(max-width:520px){
+  .pal{min-height:90px;padding:4px;}
+  .pal-hstem,.pal-estem{font-size:clamp(.9rem,3.8vw,1.25rem);}
+  .pal-num{font-size:clamp(1.2rem,4.5vw,1.7rem);}
+  .ctrl{grid-template-columns:1fr 1fr;}
+  .datos-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="kiro-login" style="position:fixed;inset:0;z-index:99999;background:linear-gradient(135deg,#f4ede0,#ebe1ce);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;">
+  <div style="background:#fdfaf3;border:1px solid rgba(184,134,11,.35);border-radius:16px;padding:42px 36px;width:90%;max-width:360px;box-shadow:0 20px 60px rgba(120,90,40,.18);text-align:center;">
+    <div style="font-size:2.2rem;color:#b8860b;font-weight:800;letter-spacing:.1em;margin-bottom:4px;">KIRO</div>
+    <div style="font-size:.95rem;color:#7a6a52;margin-bottom:30px;letter-spacing:.05em;">Generador de Cartas QMDJ</div>
+    <input id="kiro-user" type="text" placeholder="Usuario" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px 14px;margin-bottom:12px;background:#f7f0e3;border:1px solid rgba(184,134,11,.3);border-radius:10px;color:#4a3c2a;font-size:1rem;font-family:inherit;outline:none;">
+    <input id="kiro-pass" type="password" placeholder="Clave" style="width:100%;box-sizing:border-box;padding:12px 14px;margin-bottom:18px;background:#f7f0e3;border:1px solid rgba(184,134,11,.3);border-radius:10px;color:#4a3c2a;font-size:1rem;font-family:inherit;outline:none;">
+    <button id="kiro-login-btn" style="width:100%;padding:13px;background:#b8860b;border:none;border-radius:10px;color:#fdfaf3;font-size:1rem;font-weight:800;letter-spacing:.06em;cursor:pointer;font-family:inherit;transition:background .2s;" onmouseover="this.style.background='#9c7209'" onmouseout="this.style.background='#b8860b'">Ingresar</button>
+    <div id="kiro-error" style="color:#b04a32;font-size:.85rem;margin-top:14px;min-height:18px;"></div>
+  </div>
+</div>
+<script>
+(function(){
+  var U="zulemagy", P="zgy2026$$";
+  function tryLogin(){
+    var u=document.getElementById('kiro-user').value;
+    var p=document.getElementById('kiro-pass').value;
+    if(u===U && p===P){
+      document.getElementById('kiro-login').style.display='none';
+      try{sessionStorage.setItem('kiro-auth','1');}catch(e){}
+    } else {
+      document.getElementById('kiro-error').textContent='Usuario o clave incorrectos';
+    }
+  }
+  function init(){
+    try{ if(sessionStorage.getItem('kiro-auth')==='1'){ document.getElementById('kiro-login').style.display='none'; return; } }catch(e){}
+    document.getElementById('kiro-login-btn').addEventListener('click',tryLogin);
+    document.getElementById('kiro-pass').addEventListener('keydown',function(e){if(e.key==='Enter')tryLogin();});
+    document.getElementById('kiro-user').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('kiro-pass').focus();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+})();
+</script>
+
+
+<div class="hdr">
+  <div class="hdr-cn">奇門遁甲</div>
+  <div class="hdr-title">KIRO · Qi Men Dun Jia</div>
+  <div class="hdr-sub">Chart Generator · Dato' Joey Yap Methodology</div>
+</div>
+
+<div class="ctrl">
+  <div class="fg"><label>Date</label><input type="date" id="iDate" value="2026-06-09"></div>
+  <div class="fg"><label>Time</label><input type="time" id="iTime" value="08:02"></div>
+  <div class="fg"><label>Structure <span id="struct-auto" style="color:var(--green);font-size:.65rem;font-weight:600;margin-left:4px;"></span></label>
+    <select id="iStruct">
+      <option value="yang9" selected>Yang 9 陽九局</option>
+      <option value="yang1">Yang 1 陽一局</option><option value="yang2">Yang 2 陽二局</option>
+      <option value="yang3">Yang 3 陽三局</option><option value="yang4">Yang 4 陽四局</option>
+      <option value="yang5">Yang 5 陽五局</option><option value="yang6">Yang 6 陽六局</option>
+      <option value="yang7">Yang 7 陽七局</option>
+      <option value="yang8">Yang 8 陽八局</option>
+      <option value="yin1">Yin 1 陰一局</option><option value="yin2">Yin 2 陰二局</option>
+      <option value="yin3">Yin 3 陰三局</option><option value="yin4">Yin 4 陰四局</option>
+      <option value="yin5">Yin 5 陰五局</option><option value="yin6">Yin 6 陰六局</option>
+      <option value="yin7">Yin 7 陰七局</option><option value="yin8">Yin 8 陰八局</option>
+      <option value="yin9">Yin 9 陰九局</option>
+    </select>
+  </div>
+  <div class="fg"><label>Day Pillar</label>
+    <select id="iDay"><option value="jiazi">甲子 Jia Zi · Wood Rat</option><option value="yichou">乙丑 Yi Chou · Wood Ox</option><option value="bingyin">丙寅 Bing Yin · Fire Tiger</option><option value="dingmao">丁卯 Ding Mao · Fire Rabbit</option>
+      <option value="wuchen">戊辰 Wu Chen · Earth Dragon</option><option value="jisi">己巳 Ji Si · Earth Snake</option><option value="gengwu">庚午 Geng Wu · Metal Horse</option><option value="xinwei">辛未 Xin Wei · Metal Goat</option>
+      <option value="renshen">壬申 Ren Shen · Water Monkey</option><option value="guiyou">癸酉 Gui You · Water Rooster</option><option value="jiaxu">甲戌 Jia Xu · Wood Dog</option><option value="yihai">乙亥 Yi Hai · Wood Pig</option>
+      <option value="bingzi">丙子 Bing Zi · Fire Rat</option><option value="dingchou">丁丑 Ding Chou · Fire Ox</option><option value="wuyin">戊寅 Wu Yin · Earth Tiger</option><option value="jimao">己卯 Ji Mao · Earth Rabbit</option>
+      <option value="gengchen">庚辰 Geng Chen · Metal Dragon</option><option value="xinsi">辛巳 Xin Si · Metal Snake</option><option value="renwu">壬午 Ren Wu · Water Horse</option><option value="guiwei">癸未 Gui Wei · Water Goat</option>
+      <option value="jiashen">甲申 Jia Shen · Wood Monkey</option><option value="yiyou">乙酉 Yi You · Wood Rooster</option><option value="bingxu">丙戌 Bing Xu · Fire Dog</option><option value="dinghai">丁亥 Ding Hai · Fire Pig</option>
+      <option value="wuzi">戊子 Wu Zi · Earth Rat</option><option value="jichou">己丑 Ji Chou · Earth Ox</option><option value="gengyin">庚寅 Geng Yin · Metal Tiger</option><option value="xinmao">辛卯 Xin Mao · Metal Rabbit</option>
+      <option value="renchen">壬辰 Ren Chen · Water Dragon</option><option value="guisi">癸巳 Gui Si · Water Snake</option><option value="jiawu">甲午 Jia Wu · Wood Horse</option><option value="yiwei">乙未 Yi Wei · Wood Goat</option>
+      <option value="bingshen">丙申 Bing Shen · Fire Monkey</option><option value="dingyou">丁酉 Ding You · Fire Rooster</option><option value="wuxu">戊戌 Wu Xu · Earth Dog</option><option value="jihai">己亥 Ji Hai · Earth Pig</option>
+      <option value="gengzi">庚子 Geng Zi · Metal Rat</option><option value="xinchou">辛丑 Xin Chou · Metal Ox</option><option value="renyin">壬寅 Ren Yin · Water Tiger</option><option value="guimao">癸卯 Gui Mao · Water Rabbit</option>
+      <option value="jiachen">甲辰 Jia Chen · Wood Dragon</option><option value="yisi">乙巳 Yi Si · Wood Snake</option><option value="bingwu">丙午 Bing Wu · Fire Horse</option><option value="dingwei">丁未 Ding Wei · Fire Goat</option>
+      <option value="wushen">戊申 Wu Shen · Earth Monkey</option><option value="jiyou">己酉 Ji You · Earth Rooster</option><option value="gengxu">庚戌 Geng Xu · Metal Dog</option><option value="xinhai">辛亥 Xin Hai · Metal Pig</option>
+      <option value="renzi">壬子 Ren Zi · Water Rat</option><option value="guichou">癸丑 Gui Chou · Water Ox</option><option value="jiayin">甲寅 Jia Yin · Wood Tiger</option><option value="yimao">乙卯 Yi Mao · Wood Rabbit</option>
+      <option value="bingchen">丙辰 Bing Chen · Fire Dragon</option><option value="dingsi">丁巳 Ding Si · Fire Snake</option><option value="wuwu">戊午 Wu Wu · Earth Horse</option><option value="jiwei">己未 Ji Wei · Earth Goat</option>
+      <option value="gengshen">庚申 Geng Shen · Metal Monkey</option><option value="xinyou">辛酉 Xin You · Metal Rooster</option><option value="renxu">壬戌 Ren Xu · Water Dog</option><option value="guihai">癸亥 Gui Hai · Water Pig</option>
+      </select>
+  </div>
+  <button class="btn-plot" onclick="plotAll()">✦ Plot Chart</button>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('h')">⏰ Hour</button>
+  <button class="tab" onclick="sw('d')">📆 Day</button>
+  <button class="tab" onclick="sw('m')">🗓 Month</button>
+  <button class="tab" onclick="sw('y')">📅 Year</button>
+  <button class="tab" onclick="sw('fs')">🏠 Feng Shui</button>
+</div>
+
+<div class="cs">
+  <div id="ph" class="cp on"><div id="hc"></div></div>
+  <div id="pd" class="cp"><div id="dc"></div></div>
+  <div id="pm" class="cp"><div id="mc"></div></div>
+  <div id="py" class="cp"><div id="yc"></div></div>
+  <div id="pfs" class="cp">
+    <!-- FENG SHUI CONTROLS -->
+    <div class="ctrl" style="margin-top:0;border-radius:0 0 10px 10px;border-top:none;">
+      <div class="fg"><label>🧭 House Facing</label>
+        <select id="fsFacing">
+          <option value="N">N · North 坎</option>
+          <option value="NE">NE · Northeast 艮</option>
+          <option value="E" selected>E · East 震</option>
+          <option value="SE">SE · Southeast 巽</option>
+          <option value="S">S · South 離</option>
+          <option value="SW">SW · Southwest 坤</option>
+          <option value="W">W · West 兌</option>
+          <option value="NW">NW · Northwest 乾</option>
+        </select>
+      </div>
+      <div class="fg"><label>🚪 Door Sector (Sub-direction)</label>
+        <select id="fsDoor">
+          <option value="1">1 (Yang Stem / first)</option>
+          <option value="23">2/3 (Yin / Gua)</option>
+        </select>
+      </div>
+      <div class="fg"><label>📅 Period (Move-in)</label>
+        <select id="fsPeriod">
+          <option value="7">Period 7 (1984-2004)</option>
+          <option value="8" selected>Period 8 (2004-2024)</option>
+          <option value="9">Period 9 (2024-2044)</option>
+        </select>
+      </div>
+      <div class="fg"><label>🏠 Property Name</label>
+        <input type="text" id="fsName" value="My Property" placeholder="ej. Casa Principal">
+      </div>
+      <button class="btn-plot" onclick="plotFS()">⊕ Plot Feng Shui</button>
+    </div>
+    <div id="fsc"></div>
+  </div>
+</div>
+
+<div class="copy-bar">
+  <button class="btn-copy" onclick="copyText()">📋 Copy Text Format (for KIRO analysis)</button>
+</div>
+
+<script>
+// ═══ KIRO QM ENGINE v4 — Validated vs 3 real charts ═══
+const LS2P={1:'n',2:'sw',3:'e',4:'se',5:'c',6:'nw',7:'w',8:'ne',9:'s'};
+const CW8=['nw','n','ne','e','se','s','sw','w'];
+const STEMS=['戊','己','庚','辛','壬','癸','丁','丙','乙'];
+const SE_EN={'戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui','丁':'Ding','丙':'Bing','乙':'Yi','甲':'Jia'};
+const STEM_Q={'甲':'aus','乙':'aus','丙':'aus','丁':'aus','戊':'aus','己':'inaus','庚':'inaus','辛':'inaus','壬':'inaus','癸':'inaus'};
+
+function buildEP(n,isYin){const path=isYin?[1,9,8,7,6,5,4,3,2]:[1,2,3,4,5,6,7,8,9];const si=path.indexOf(n);const ep={};for(let i=0;i<9;i++)ep[LS2P[path[(si+i)%9]]]=STEMS[i];return ep;}
+const EP_ALL={}; for(let n=1;n<=9;n++){EP_ALL['yang'+n]=buildEP(n,false);EP_ALL['yin'+n]=buildEP(n,true);}
+
+const STAR_NATAL={n:{zh:'蓬',en:'Grass',q:'bad'},sw:{zh:'芮',en:'Grain',q:'bad'},e:{zh:'沖',en:'Destructor',q:'mid'},se:{zh:'輔',en:'Assistant',q:'good'},c:{zh:'禽',en:'Bird',q:'mid'},nw:{zh:'心',en:'Heart',q:'good'},w:{zh:'柱',en:'Pillar',q:'bad'},ne:{zh:'任',en:'Ambassador',q:'good'},s:{zh:'英',en:'Hero',q:'mid'}};
+const DOOR_NATAL={nw:{zh:'開',en:'Open',q:'aus'},n:{zh:'休',en:'Rest',q:'aus'},ne:{zh:'生',en:'Life',q:'aus'},e:{zh:'傷',en:'Harm',q:'inaus'},se:{zh:'杜',en:'Delusion',q:'neut'},s:{zh:'景',en:'Scenery',q:'neut'},sw:{zh:'死',en:'Death',q:'inaus'},w:{zh:'驚',en:'Fear',q:'inaus'}};
+const DEITY_Y=[{zh:'符',en:'Chief'},{zh:'蛇',en:'Snake'},{zh:'陰',en:'Moon'},{zh:'合',en:'Harmony'},{zh:'陳',en:'Hook'},{zh:'雀',en:'Phoenix'},{zh:'地',en:'Earth'},{zh:'天',en:'Heaven'}];
+const DEITY_N=[{zh:'符',en:'Chief'},{zh:'天',en:'Heaven'},{zh:'地',en:'Earth'},{zh:'玄',en:'Tortoise'},{zh:'虎',en:'Tiger'},{zh:'合',en:'Harmony'},{zh:'陰',en:'Moon'},{zh:'蛇',en:'Snake'}];
+const DEITY_AUS=['Chief','Moon','Harmony','Earth','Heaven'];
+const DEITY_INAUS=['Snake','Tiger','Hook','Phoenix','Tortoise'];
+
+const LS_MAP={};
+['甲子','乙丑','丙寅','丁卯','戊辰','己巳','庚午','辛未','壬申','癸酉'].forEach(p=>LS_MAP[p]='戊');
+['甲戌','乙亥','丙子','丁丑','戊寅','己卯','庚辰','辛巳','壬午','癸未'].forEach(p=>LS_MAP[p]='己');
+['甲申','乙酉','丙戌','丁亥','戊子','己丑','庚寅','辛卯','壬辰','癸巳'].forEach(p=>LS_MAP[p]='庚');
+['甲午','乙未','丙申','丁酉','戊戌','己亥','庚子','辛丑','壬寅','癸卯'].forEach(p=>LS_MAP[p]='辛');
+['甲辰','乙巳','丙午','丁未','戊申','己酉','庚戌','辛亥','壬子','癸丑'].forEach(p=>LS_MAP[p]='壬');
+['甲寅','乙卯','丙辰','丁巳','戊午','己未','庚申','辛酉','壬戌','癸亥'].forEach(p=>LS_MAP[p]='癸');
+
+const HR_CYCLE={'甲':['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],'己':['甲','乙','丙','丁','戊','己','庚','辛','壬','癸','甲','乙'],'乙':['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],'庚':['丙','丁','戊','己','庚','辛','壬','癸','甲','乙','丙','丁'],'丙':['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],'辛':['戊','己','庚','辛','壬','癸','甲','乙','丙','丁','戊','己'],'丁':['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],'壬':['庚','辛','壬','癸','甲','乙','丙','丁','戊','己','庚','辛'],'戊':['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],'癸':['壬','癸','甲','乙','丙','丁','戊','己','庚','辛','壬','癸']};
+const BR=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BR_EN={'子':'Zi','丑':'Chou','寅':'Yin','卯':'Mao','辰':'Chen','巳':'Si','午':'Wu','未':'Wei','申':'Shen','酉':'You','戌':'Xu','亥':'Hai'};
+const BR_HRS={'子':'23-1','丑':'1-3','寅':'3-5','卯':'5-7','辰':'7-9','巳':'9-11','午':'11-13','未':'13-15','申':'15-17','酉':'17-19','戌':'19-21','亥':'21-23'};
+
+const DAY_MAP={
+  jiazi:['甲','子','Jia Zi','Wood Rat'],yichou:['乙','丑','Yi Chou','Wood Ox'],bingyin:['丙','寅','Bing Yin','Fire Tiger'],
+  dingmao:['丁','卯','Ding Mao','Fire Rabbit'],wuchen:['戊','辰','Wu Chen','Earth Dragon'],jisi:['己','巳','Ji Si','Earth Snake'],
+  gengwu:['庚','午','Geng Wu','Metal Horse'],xinwei:['辛','未','Xin Wei','Metal Goat'],renshen:['壬','申','Ren Shen','Water Monkey'],
+  guiyou:['癸','酉','Gui You','Water Rooster'],jiaxu:['甲','戌','Jia Xu','Wood Dog'],yihai:['乙','亥','Yi Hai','Wood Pig'],
+  bingzi:['丙','子','Bing Zi','Fire Rat'],dingchou:['丁','丑','Ding Chou','Fire Ox'],wuyin:['戊','寅','Wu Yin','Earth Tiger'],
+  jimao:['己','卯','Ji Mao','Earth Rabbit'],gengchen:['庚','辰','Geng Chen','Metal Dragon'],xinsi:['辛','巳','Xin Si','Metal Snake'],
+  renwu:['壬','午','Ren Wu','Water Horse'],guiwei:['癸','未','Gui Wei','Water Goat'],jiashen:['甲','申','Jia Shen','Wood Monkey'],
+  yiyou:['乙','酉','Yi You','Wood Rooster'],bingxu:['丙','戌','Bing Xu','Fire Dog'],dinghai:['丁','亥','Ding Hai','Fire Pig'],
+  wuzi:['戊','子','Wu Zi','Earth Rat'],jichou:['己','丑','Ji Chou','Earth Ox'],gengyin:['庚','寅','Geng Yin','Metal Tiger'],
+  xinmao:['辛','卯','Xin Mao','Metal Rabbit'],renchen:['壬','辰','Ren Chen','Water Dragon'],guisi:['癸','巳','Gui Si','Water Snake'],
+  jiawu:['甲','午','Jia Wu','Wood Horse'],yiwei:['乙','未','Yi Wei','Wood Goat'],bingshen:['丙','申','Bing Shen','Fire Monkey'],
+  dingyou:['丁','酉','Ding You','Fire Rooster'],wuxu:['戊','戌','Wu Xu','Earth Dog'],jihai:['己','亥','Ji Hai','Earth Pig'],
+  gengzi:['庚','子','Geng Zi','Metal Rat'],xinchou:['辛','丑','Xin Chou','Metal Ox'],renyin:['壬','寅','Ren Yin','Water Tiger'],
+  guimao:['癸','卯','Gui Mao','Water Rabbit'],jiachen:['甲','辰','Jia Chen','Wood Dragon'],yisi:['乙','巳','Yi Si','Wood Snake'],
+  bingwu:['丙','午','Bing Wu','Fire Horse'],dingwei:['丁','未','Ding Wei','Fire Goat'],wushen:['戊','申','Wu Shen','Earth Monkey'],
+  jiyou:['己','酉','Ji You','Earth Rooster'],gengxu:['庚','戌','Geng Xu','Metal Dog'],xinhai:['辛','亥','Xin Hai','Metal Pig'],
+  renzi:['壬','子','Ren Zi','Water Rat'],guichou:['癸','丑','Gui Chou','Water Ox'],jiayin:['甲','寅','Jia Yin','Wood Tiger'],
+  yimao:['乙','卯','Yi Mao','Wood Rabbit'],bingchen:['丙','辰','Bing Chen','Fire Dragon'],dingsi:['丁','巳','Ding Si','Fire Snake'],
+  wuwu:['戊','午','Wu Wu','Earth Horse'],jiwei:['己','未','Ji Wei','Earth Goat'],gengshen:['庚','申','Geng Shen','Metal Monkey'],
+  xinyou:['辛','酉','Xin You','Metal Rooster'],renxu:['壬','戌','Ren Xu','Water Dog'],guihai:['癸','亥','Gui Hai','Water Pig'],
+  
+};
+
+const DE_MAP={};
+const deStreams=[['甲子','戌','亥'],['甲戌','申','酉'],['甲申','午','未'],['甲午','辰','巳'],['甲辰','寅','卯'],['甲寅','子','丑']];
+const ALL60=[];
+{let s=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'],b=BR;for(let i=0;i<60;i++)ALL60.push(s[i%10]+b[i%12]);}
+deStreams.forEach(([start,d1,d2])=>{const si=ALL60.indexOf(start);for(let i=0;i<10;i++)DE_MAP[ALL60[(si+i)%60]]=[d1,d2];});
+const BR_PAL={'子':'n','丑':'ne','寅':'ne','卯':'e','辰':'se','巳':'se','午':'s','未':'sw','申':'w','酉':'w','戌':'nw','亥':'nw'};
+
+// Flying numbers: center = structure number, others rotate from Luo Shu
+// Formula: flyNum[p] = ((LS[p] - 1 + (structNum - 5 + 9)) % 9) + 1
+// Verified: Yang1✓ Yang6✓ Yang8✓ Yang9✓
+const LS_NUM={n:1,sw:2,e:3,se:4,c:5,nw:6,w:7,ne:8,s:9};
+function getFlyingNum(p, structNum){
+  if(p==='c') return structNum;
+  const shift=((structNum-5)%9+9)%9;
+  return ((LS_NUM[p]-1+shift)%9)+1;
+}
+const FLYING_NUM={}; // kept for backward compat but now computed dynamically
+
+function getHourBranch(h){const idx=Math.floor(((h+1)%24)/2);return{br:BR[idx],idx};}
+
+function compute(sk,dk,h,chartType){
+  // chartType: 'h'=hour, 'd'=day, 'm'=month, 'y'=year (true/false legacy = hour/day)
+  if(chartType===true)chartType='h';
+  if(chartType===false||!chartType)chartType='d';
+  const isYin=sk.startsWith('yin');
+  const sNum=parseInt(sk.replace(/[a-z]/gi,''));
+  const EP=Object.assign({},EP_ALL[sk]);
+  const di=DAY_MAP[dk]||DAY_MAP['guichou'];
+  const dStem=di[0],dBranch=di[1];
+  const {br:hBr,idx:hIdx}=getHourBranch(h);
+  const hStem=(HR_CYCLE[dStem]||HR_CYCLE['甲'])[hIdx];
+  const hPillar=hStem+hBr;
+  const dPillar=dStem+dBranch;
+  // Month & Year pillars (2026: month from date field, year 丙午)
+  const mp=(typeof MONTH_PILLAR!=='undefined')?MONTH_PILLAR:'甲午';
+  const yp=(typeof YEAR_PILLAR!=='undefined')?YEAR_PILLAR:'丙午';
+
+  // Active stem by chart type
+  let activeStem, activePillar;
+  if(chartType==='h'){activeStem=hStem;activePillar=hPillar;}
+  else if(chartType==='m'){activeStem=mp[0];activePillar=mp;}
+  else if(chartType==='y'){activeStem=yp[0];activePillar=yp;}
+  else{activeStem=dStem;activePillar=dPillar;}
+  const leadStem=LS_MAP[activePillar]||'戊';
+
+  // Chief flies to palace where EARTH stem = active stem
+  // NOTE: validated vs 4 real charts — the active stem is ALWAYS found in an
+  // outer palace of the Earth Plate (the center stem 乙/Yi never acts as active
+  // stem in practice because hour stems map to the Liu Yi San Qi outer positions).
+  // No special center rule needed: just locate the active stem.
+  let chiefPal=null;
+  for(const[p,s]of Object.entries(EP))if(s===activeStem&&p!=='c'){chiefPal=p;break;}
+  if(!chiefPal){
+    // 甲 hidden: Chief goes to the Lead Stem palace (validated vs month chart Yin7)
+    if(activeStem==='甲'){
+      for(const[p,s]of Object.entries(EP))if(s===leadStem&&p!=='c'){chiefPal=p;break;}
+    }
+    // Active stem at center: borrows SW (validated 9 jun day 甲寅 with 癸 center)
+    if(!chiefPal) chiefPal='sw';
+  }
+  let leadEarthPal=null;
+  for(const[p,s]of Object.entries(EP))if(s===leadStem&&p!=='c'){leadEarthPal=p;break;}
+  if(!leadEarthPal)leadEarthPal='sw';
+
+  const offset=(CW8.indexOf(chiefPal)-CW8.indexOf(leadEarthPal)+8)%8;
+
+  // Heaven Plate
+  const HP={};for(let i=0;i<8;i++)HP[CW8[(i+offset)%8]]=EP[CW8[i]];HP['c']=EP['c'];
+  // Fu Yin check (must be before doors)
+  let fuYin=true;for(const p of CW8)if(EP[p]!==HP[p]){fuYin=false;break;}
+  // Stars
+  const SP={};for(let i=0;i<8;i++)SP[CW8[(i+offset)%8]]=STAR_NATAL[CW8[i]];SP['c']=STAR_NATAL['c'];
+  // ENVOY & DOORS (decoded 12jun vs real charts):
+  // Envoy flies from lead palace via Luo Shu +1 per unit (day/hour) since stream start
+  // Position in stream: how many units since 甲 (Jia) of current 旬
+  const STREAM_POS={'甲':1,'乙':2,'丙':3,'丁':4,'戊':5,'己':6,'庚':7,'辛':8,'壬':9,'癸':10};
+  const posInStream=STREAM_POS[activeStem]||1;
+  const LS_OF_PAL={n:1,sw:2,e:3,se:4,c:5,nw:6,w:7,ne:8,s:9};
+  const PAL_OF_LS={1:'n',2:'sw',3:'e',4:'se',5:'c',6:'nw',7:'w',8:'ne',9:'s'};
+  let envoyLS=LS_OF_PAL[leadEarthPal]+(isYin?-(posInStream-1):(posInStream-1));
+  envoyLS=((envoyLS-1)%9+9)%9+1;
+  let envoyPal=PAL_OF_LS[envoyLS];
+  if(envoyPal==='c')envoyPal='sw'; // center borrows SW
+  // Doors rotate so natal door of lead palace lands on envoy palace
+  const CW8_DOOR=['nw','n','ne','e','se','s','sw','w'];
+  const DOOR_SEQ_LIST=[DOOR_NATAL.nw,DOOR_NATAL.n,DOOR_NATAL.ne,DOOR_NATAL.e,DOOR_NATAL.se,DOOR_NATAL.s,DOOR_NATAL.sw,DOOR_NATAL.w];
+  const leadIdx=CW8.indexOf(leadEarthPal);
+  const envoyIdx=CW8.indexOf(envoyPal);
+  const doorOffset=((leadIdx-envoyIdx)%8+8)%8;
+  const DP={};
+  for(let i=0;i<8;i++) DP[CW8_DOOR[i]]=DOOR_SEQ_LIST[(i+doorOffset)%8];
+  // Deities
+  const DEP={};const DSEQ=isYin?DEITY_N:DEITY_Y;const ci=CW8.indexOf(chiefPal);
+  for(let i=0;i<8;i++){const idx=(ci+i)%8;DEP[CW8[idx]]=DSEQ[i];} // both Yang & Yin go CW (verified vs Yin7 month chart)
+
+  const de=DE_MAP[dPillar]||['—','—'];
+  const dePals=de.map(b=>BR_PAL[b]||'—');
+  const envoy=DP[envoyPal]?DP[envoyPal].en:'—';
+
+  return {isYin,sNum,EP,HP,DP,SP,DEP,leadStem,chiefPal,leadEarthPal,offset,
+          dStem,dBranch,dPillar,dRoman:di[2],dAnimal:di[3],hStem,hBr,hPillar,
+          de,dePals,envoy,envoyPal,fuYin,sKey:sk};
+}
+
+function energyLvl(pid,d){
+  let a=0,n=0;
+  const door=d.DP[pid];if(door){if(door.q==='aus')a++;else if(door.q==='inaus')n++;}
+  const star=d.SP[pid];if(star){if(star.q==='good')a++;else if(star.q==='bad')n++;}
+  const dy=d.DEP[pid];if(dy){if(DEITY_AUS.includes(dy.en))a++;else if(DEITY_INAUS.includes(dy.en))n++;}
+  const hs=d.HP[pid];if(hs){if(STEM_Q[hs]==='aus')a++;else n++;}
+  if(n>a)return'❌';if(a>n)return'✅';return'⚠️';
+}
+
+const PALACES=[
+  {id:'se',dir:'SE',tri:'Xun 巽 · Wood'},{id:'s',dir:'S',tri:'Li 離 · Fire'},
+  {id:'sw',dir:'SW',tri:'Kun 坤 · Earth'},{id:'e',dir:'E',tri:'Zhen 震 · Wood'},
+  {id:'c',dir:'C',tri:'Center 中'},{id:'w',dir:'W',tri:'Dui 兌 · Metal'},
+  {id:'ne',dir:'NE',tri:'Gen 艮 · Earth'},{id:'n',dir:'N',tri:'Kan 坎 · Water'},
+  {id:'nw',dir:'NW',tri:'Qian 乾 · Metal'},
+];
+
+let lastTextFormat='';
+
+function renderChart(dateStr,h,data,type){
+  const{isYin,sNum,EP,HP,DP,SP,DEP,leadStem,chiefPal,leadEarthPal,dStem,dBranch,dPillar,dRoman,dAnimal,hStem,hBr,de,dePals,envoy,envoyPal,fuYin,sKey}=data;
+  const pol=isYin?'Yin 陰':'Yang 陽';
+  const typeLabel={h:'Hour 時盤',d:'Day 日盤',m:'Month 月盤',y:'Year 年盤'}[type];
+  const NUM={}; for(const p of ['se','s','sw','e','c','w','ne','n','nw']) NUM[p]=getFlyingNum(p,sNum);
+
+  const yr=parseInt(dateStr.split('-')[0]),mo=parseInt(dateStr.split('-')[1]);
+  const YR={2025:'乙巳 Yi Si',2026:'丙午 Bing Wu',2027:'丁未 Ding Wei'};
+  // Solar months 2026 (month starts ~5th-7th of gregorian month)
+  // Jan=己丑(prev yr), Feb=庚寅, Mar=辛卯, Apr=壬辰, May=癸巳, Jun=甲午, Jul=乙未, Aug=丙申, Sep=丁酉, Oct=戊戌, Nov=己亥, Dec=庚子
+  const MO={1:'己丑 Ji Chou',2:'庚寅 Geng Yin',3:'辛卯 Xin Mao',4:'壬辰 Ren Chen',5:'癸巳 Gui Si',6:'甲午 Jia Wu',7:'乙未 Yi Wei',8:'丙申 Bing Shen',9:'丁酉 Ding You',10:'戊戌 Wu Xu',11:'己亥 Ji Hai',12:'庚子 Geng Zi'};
+
+  let html=`<div class="pillars">
+    <div class="pb"><div class="pb-type">Year 年</div><div class="pb-stem">${(YR[yr]||'丙午').split(' ')[0]}</div><div class="pb-en">${(YR[yr]||'丙午 Bing Wu').split(' ').slice(1).join(' ')}</div></div>
+    <div class="pb"><div class="pb-type">Month 月</div><div class="pb-stem">${(MO[mo]||'甲午 Jia Wu').split(' ')[0]}</div><div class="pb-en">${(MO[mo]||'甲午 Jia Wu').split(' ').slice(1).join(' ')}</div></div>
+    <div class="pb"><div class="pb-type">Day 日</div><div class="pb-stem">${dStem}${dBranch}</div><div class="pb-en">${dRoman}</div></div>
+    <div class="pb"><div class="pb-type">Hour 時</div><div class="pb-stem">${hStem}${hBr}</div><div class="pb-en">${SE_EN[hStem]} ${BR_EN[hBr]}</div></div>
+  </div>`;
+
+  html+=`<div class="infobar">
+    <div class="ib"><span class="ib-l">Chart</span><span class="ib-v">${typeLabel}</span></div>
+    <div class="ib"><span class="ib-l">Flow</span><span class="ib-v ${isYin?'yin':'yang'}">${pol} ${sNum}</span></div>
+    <div class="ib"><span class="ib-l">Lead Stem 符首</span><span class="ib-v">${leadStem} ${SE_EN[leadStem]} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="ib"><span class="ib-l">Chief / Lead Star</span><span class="ib-v">${chiefPal.toUpperCase()}</span></div>
+    <div class="ib"><span class="ib-l">Envoy 直使</span><span class="ib-v">${envoy} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="ib"><span class="ib-l">DE 空亡</span><span class="ib-v">${de[0]}/${de[1]}</span></div>
+    ${fuYin?'<div class="ib"><span class="ib-l alert">⚡ Fu Yin</span><span class="ib-v alert">EP=HP</span></div>':''}
+  </div>`;
+
+  html+=`<div class="top-compass"><div class="tc">SE · Xun 巽</div><div class="tc">S · Li 離</div><div class="tc">SW · Kun 坤</div></div>`;
+  html+=`<div class="grid9">`;
+  for(const p of PALACES){
+    const es=EP[p.id]||'—',hs=(p.id!=='c')?(HP[p.id]||'—'):'—';
+    const door=DP[p.id],star=SP[p.id],deity=DEP[p.id];
+    const isCenter=p.id==='c';
+    let mk='';
+    if(p.id===chiefPal)mk+='<span class="mk mk-ls">Lead Star</span>';
+    if(p.id===leadEarthPal)mk+='<span class="mk mk-envoy">Envoy</span>';
+    if(dePals.includes(p.id))mk+='<span class="mk mk-de">DE</span>';
+    html+=`<div class="pal ${isCenter?'center':''}">
+      <div class="pal-markers">${mk}</div>
+      <div class="pal-dir">${p.dir}</div>
+      <div class="pal-trig">${p.tri}</div>
+      <div class="pal-top">
+        <div class="pal-hstem">${hs}<div style="font-size:.5rem;font-weight:600;color:var(--heaven);opacity:.85;">${SE_EN[hs]||''}</div></div>
+        <div class="pal-top-right">${deity?`<div class="pal-deity">${deity.zh} ${deity.en}</div>`:''}${star?`<div class="pal-star">${star.zh} ${star.en}</div>`:''}</div>
+      </div>
+      <div class="pal-div"></div>
+      <div class="pal-bot">
+        <div class="pal-estem">${es}<div style="font-size:.5rem;font-weight:600;color:var(--earth);opacity:.85;">${SE_EN[es]||''}</div></div>
+        ${door?`<div class="pal-door ${door.q}">${door.zh} ${door.en}</div>`:'<div></div>'}
+        <div class="pal-num">${NUM[p.id]||''}</div>
+      </div>
+    </div>`;
+  }
+  html+=`</div>`;
+  html+=`<div class="bot-compass"><div class="tc">NE · Gen 艮</div><div class="tc">N · Kan 坎</div><div class="tc">NW · Qian 乾</div></div>`;
+
+  // Datos
+  html+=`<div class="datos"><h3>Key Data</h3><div class="datos-grid">
+    <div class="dr"><span class="dl">Lead Stem 符首:</span><span class="dv">${leadStem} ${SE_EN[leadStem]} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="dr"><span class="dl">Lead Star 直符:</span><span class="dv">${SP[chiefPal]?SP[chiefPal].zh+' '+SP[chiefPal].en:'—'} · ${chiefPal.toUpperCase()}</span></div>
+    <div class="dr"><span class="dl">Envoy 直使:</span><span class="dv">${envoy} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="dr"><span class="dl">DE 空亡:</span><span class="dv">${de[0]}/${de[1]} (${dePals.map(p=>p.toUpperCase()).join(', ')})</span></div>
+    <div class="dr"><span class="dl">Fu Yin 伏吟:</span><span class="dv">${fuYin?'✅ Yes':'No'}</span></div>
+    <div class="dr"><span class="dl">Structure:</span><span class="dv">${pol} ${sNum} Ju</span></div>
+  </div></div>`;
+
+  // Energy
+  const dirs=['SE','S','SW','E','W','NE','N','NW'],pids=['se','s','sw','e','w','ne','n','nw'];
+  html+=`<div class="energy"><h3>Energy Level</h3><div class="energy-grid">`;
+  for(let i=0;i<8;i++)html+=`<div class="ec"><span class="ec-l">${dirs[i]}:</span><span class="ec-v">${energyLvl(pids[i],data)}</span></div>`;
+  html+=`</div></div>`;
+
+  // Zulema
+  const Z=[['壬','Ren','Self / Zulema'],['辛','Xin','EI / Creations'],['甲','Jia','Competitor / Rival'],['戊','Wu','Leadership / VIP']];
+  html+=`<div class="zulema"><h3>Zulema's 4 Stems</h3>`;
+  for(const[st,en,role]of Z){
+    let loc='—',plane='';
+    for(const[p,s]of Object.entries(HP))if(s===st){loc=p.toUpperCase();plane='Heaven';break;}
+    if(loc==='—')for(const[p,s]of Object.entries(EP))if(s===st){loc=p.toUpperCase();plane='Earth';break;}
+    if(st==='甲'){loc=chiefPal.toUpperCase();plane='hidden behind Lead Stem';}
+    const lvl=loc!=='—'?energyLvl(loc.toLowerCase(),data):'—';
+    html+=`<div class="zt"><div class="zt-header"><span class="zt-stem">${st}</span><span class="zt-role">${en} · ${role}</span><span class="zt-loc">Palace ${loc} (${plane}) ${lvl}</span></div></div>`;
+  }
+  html+=`</div>`;
+
+  html+=`<div class="legend">
+    <div class="lg-g"><span class="lg-t">Plates</span><div class="lg-items"><span class="lg-i"><span class="lg-dot" style="background:#a0341e"></span>Heaven 天 (top)</span><span class="lg-i"><span class="lg-dot" style="background:#5a3d1e"></span>Earth 地 (bottom)</span></div></div>
+    <div class="lg-g"><span class="lg-t">Doors</span><div class="lg-items"><span class="lg-i" style="color:#4a7c3f">✅ Open·Rest·Life</span><span class="lg-i" style="color:#b04a32">❌ Death·Harm·Fear</span><span class="lg-i" style="color:#b8860b">⚠️ Scenery·Delusion</span></div></div>
+  </div>`;
+
+  return html;
+}
+
+function buildTextFormat(dateStr,timeStr,dH,hH){
+  // dH = day chart data, hH = hour chart data
+  const fmtRow=(d,p,withNum)=>{
+    const door=d.DP[p],star=d.SP[p],deity=d.DEP[p];
+    const hs=d.HP[p]?SE_EN[d.HP[p]]:'—',es=d.EP[p]?SE_EN[d.EP[p]]:'—';
+    return `${SE_EN[d.HP[p]]||'-'}/${SE_EN[d.EP[p]]||'-'}`;
+  };
+  // (text format builder — simplified; full version in copy)
+  return 'Text format ready — see chart above.';
+}
+
+// ═══ FENG SHUI ENGINE ═══════════════════════════════
+
+// House Pillar: Facing + Period → Pillar
+const FS_BASE_P8 = {'N':6,'NE':5,'E':8,'SE':7,'S':4,'SW':3,'W':2,'NW':1};
+const BR_CYCLE = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const STEMS10 = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+
+function housePillar(facing, period){
+  const branch = BR_CYCLE[((8-period)%12+12)%12];
+  const base = FS_BASE_P8[facing] ?? 0;
+  const stem = STEMS10[((base+(period-8))%10+10)%10];
+  return {pillar:stem+branch, stem, branch};
+}
+
+// Xuan Kong Flying Star charts (Period 8 & 9, all 16 sub-directions each)
+const XK = {
+  p8:{
+    'S1':  {se:[5,2,7],s:[9,7,3],sw:[7,9,5],e:[6,1,6],c:[4,4,8],w:[2,5,1],ne:[1,6,2],n:[8,8,4],nw:[3,4,9]},
+    'S23': {se:[3,4,7],s:[8,8,3],sw:[1,6,5],e:[2,5,6],c:[4,3,8],w:[6,1,1],ne:[7,9,2],n:[9,7,4],nw:[5,2,9]},
+    'SW1': {s:[7,1,3],sw:[5,8,5],w:[9,3,1],se:[3,6,7],c:[2,5,8],nw:[1,4,9],e:[4,7,6],ne:[8,2,2],n:[6,9,4]},
+    'SW23':{s:[6,9,3],sw:[8,2,5],w:[4,7,1],se:[1,4,7],c:[2,5,8],nw:[3,6,9],e:[7,1,6],ne:[9,3,2],n:[5,8,4]},
+    'W1':  {sw:[9,7,5],w:[4,3,1],nw:[5,2,9],s:[2,5,3],c:[6,1,8],n:[1,6,4],se:[7,9,7],e:[8,8,6],ne:[3,4,2]},
+    'W23': {sw:[3,4,5],w:[8,8,1],nw:[7,9,9],s:[1,6,3],c:[6,1,8],n:[2,5,4],se:[5,2,7],e:[4,3,6],ne:[9,7,2]},
+    'NW1': {w:[9,2,1],nw:[8,1,9],n:[1,3,4],sw:[4,6,5],c:[7,9,8],ne:[3,5,2],s:[2,8,3],e:[6,4,6],se:[5,7,7]},
+    'NW23':{w:[5,7,1],nw:[6,8,9],n:[2,4,4],sw:[1,3,5],c:[7,9,8],ne:[9,2,2],s:[3,5,6],e:[8,1,2],se:[4,6,3]},
+    'N1':  {nw:[4,3,9],n:[8,8,4],ne:[6,1,2],w:[5,2,1],c:[3,4,8],e:[1,6,6],sw:[9,7,5],s:[7,9,3],se:[2,5,7]},
+    'N23': {nw:[2,5,9],n:[7,9,4],ne:[9,7,2],w:[1,6,1],c:[3,4,8],e:[5,2,6],sw:[6,1,5],s:[8,8,3],se:[4,3,7]},
+    'NE1': {n:[9,6,4],ne:[2,8,2],e:[8,7,6],nw:[4,1,9],c:[5,2,8],se:[6,3,7],w:[1,5,3],sw:[3,9,1],s:[7,4,5]},
+    'NE23':{n:[1,7,4],ne:[8,5,2],e:[3,9,6],nw:[6,3,9],c:[5,2,8],se:[4,1,7],w:[9,8,3],sw:[2,4,1],s:[7,6,5]},
+    'E1':  {ne:[4,3,2],e:[8,8,6],se:[9,7,7],n:[6,1,4],c:[1,6,8],s:[5,2,3],nw:[2,5,9],w:[3,4,1],sw:[7,9,5]},
+    'E23': {ne:[7,9,2],e:[3,4,6],se:[2,5,7],n:[5,2,4],c:[1,6,8],s:[6,1,3],nw:[9,7,9],w:[8,8,1],sw:[4,3,5]},
+    'SE1': {e:[7,5,6],se:[8,6,7],s:[4,2,3],ne:[3,1,2],c:[9,7,8],sw:[2,9,1],n:[5,3,4],nw:[1,8,9],w:[6,4,5]},
+    'SE23':{e:[2,9,6],se:[1,8,7],s:[5,3,3],ne:[6,4,2],c:[9,7,8],sw:[4,2,1],n:[4,2,4],nw:[8,6,9],w:[7,5,5]},
+  },
+  p9:{
+    'S1':  {se:[4,5,8],s:[9,9,4],sw:[2,7,6],e:[3,6,7],c:[5,4,9],w:[7,2,2],ne:[8,1,3],n:[1,8,5],nw:[6,3,1]},
+    'S23': {se:[6,3,8],s:[1,8,4],sw:[8,1,6],e:[7,2,7],c:[5,4,9],w:[3,6,2],ne:[2,7,3],n:[9,9,5],nw:[4,5,1]},
+    'SW1': {s:[7,2,4],sw:[9,9,6],w:[5,4,2],se:[2,7,8],c:[3,6,9],nw:[4,5,1],e:[8,1,3],ne:[1,8,5],n:[6,3,7]},
+    'SW23':{s:[8,1,4],sw:[6,3,6],w:[1,8,2],se:[4,5,8],c:[3,6,9],nw:[2,7,1],e:[9,9,3],ne:[5,4,5],n:[7,2,7]},
+    'W1':  {sw:[4,5,6],w:[9,9,2],nw:[8,1,1],s:[2,7,4],c:[7,2,9],n:[3,6,5],se:[6,3,8],e:[5,4,3],ne:[1,8,7]},
+    'W23': {sw:[1,8,6],w:[5,4,2],nw:[6,3,1],s:[3,6,4],c:[7,2,9],n:[2,7,5],se:[8,1,8],e:[9,9,3],ne:[4,5,7]},
+    'NW1': {w:[6,3,2],nw:[7,2,1],n:[2,3,5],sw:[2,7,6],c:[8,1,9],ne:[5,4,3],s:[9,9,4],e:[3,6,8],se:[4,5,7]},
+    'NW23':{w:[1,8,2],nw:[9,9,1],n:[4,5,5],sw:[5,4,6],c:[8,1,9],ne:[2,7,3],s:[7,2,4],e:[6,3,8],se:[3,6,7]},
+    'N1':  {nw:[3,6,1],n:[8,1,5],ne:[1,8,3],w:[2,7,2],c:[4,5,9],e:[6,3,7],sw:[7,2,6],s:[9,9,4],se:[5,4,8]},
+    'N23': {nw:[5,4,1],n:[9,9,5],ne:[7,2,3],w:[6,3,2],c:[4,5,9],e:[2,7,7],sw:[1,8,6],s:[8,1,4],se:[3,6,8]},
+    'NE1': {n:[1,8,5],ne:[3,6,3],e:[8,1,7],nw:[5,4,1],c:[6,3,9],se:[7,2,8],w:[9,4,4],sw:[4,5,2],s:[2,9,6]},
+    'NE23':{n:[2,7,5],ne:[9,9,3],e:[4,5,7],nw:[7,2,1],c:[6,3,9],se:[5,4,8],w:[1,8,4],sw:[3,6,2],s:[8,1,6]},
+    'E1':  {ne:[8,1,3],e:[4,5,7],se:[3,6,8],n:[6,3,5],c:[2,7,9],s:[7,2,4],nw:[1,8,1],w:[9,9,2],sw:[5,4,6]},
+    'E23': {ne:[5,4,3],e:[9,9,7],se:[1,8,8],n:[7,2,5],c:[2,7,9],s:[6,3,4],nw:[3,6,1],w:[4,5,2],sw:[8,1,6]},
+    'SE1': {e:[8,1,7],se:[9,9,8],s:[5,4,4],ne:[4,5,3],c:[1,8,9],sw:[3,6,2],n:[6,3,5],nw:[2,7,1],w:[7,2,6]},
+    'SE23':{e:[3,6,7],se:[2,7,8],s:[6,3,4],ne:[7,2,3],c:[1,8,9],sw:[4,5,2],n:[4,5,5],nw:[9,9,1],w:[8,1,6]},
+  }
+};
+
+function getXKKey(facing, doorSub){
+  // doorSub = '1' or '23'
+  return facing + (doorSub==='1'?'1':'23');
+}
+
+// 24 Mountains (for display)
+const M24 = {
+  'S1':'丙 Bing·Yang Fire','S2':'午 Wu·Horse','S3':'丁 Ding·Yin Fire',
+  'SW1':'未 Wei·Goat','SW2':'坤 Kun·SW','SW3':'申 Shen·Monkey',
+  'W1':'庚 Geng·Yang Metal','W2':'酉 You·Rooster','W3':'辛 Xin·Yin Metal',
+  'NW1':'戌 Xu·Dog','NW2':'乾 Qian·NW','NW3':'亥 Hai·Pig',
+  'N1':'壬 Ren·Yang Water','N2':'子 Zi·Rat','N3':'癸 Gui·Yin Water',
+  'NE1':'丑 Chou·Ox','NE2':'艮 Gen·NE','NE3':'寅 Yin·Tiger',
+  'E1':'甲 Jia·Yang Wood','E2':'卯 Mao·Rabbit','E3':'乙 Yi·Yin Wood',
+  'SE1':'辰 Chen·Dragon','SE2':'巽 Xun·SE','SE3':'巳 Si·Snake',
+};
+
+function renderFengShui(){
+  const facing = document.getElementById('fsFacing').value;
+  const doorSub = document.getElementById('fsDoor').value;
+  const period = parseInt(document.getElementById('fsPeriod').value);
+  const name = document.getElementById('fsName').value || 'Property';
+
+  // House pillar & QM engine
+  const hp = housePillar(facing, period);
+  const qmKey = 'yang' + period; // structure matches period for FS
+  const qmData = compute(qmKey, Object.keys(DAY_MAP).find(k=>DAY_MAP[k][0]+DAY_MAP[k][1]===hp.pillar)||'renzi', 12, false);
+
+  // XK chart
+  const xkKey = getXKKey(facing, doorSub);
+  const xkData = (XK['p'+period] || XK.p9)[xkKey] || (XK['p'+period] || XK.p9)[facing+'1'];
+
+  const DIR_FACING = {N:'N',NE:'NE',E:'E',SE:'SE',S:'S',SW:'SW',W:'W',NW:'NW'};
+
+  let html = `<div class="infobar">
+    <div class="ib"><span class="ib-l">Property</span><span class="ib-v">${name}</span></div>
+    <div class="ib"><span class="ib-l">Facing 朝向</span><span class="ib-v">${facing}</span></div>
+    <div class="ib"><span class="ib-l">Period 元运</span><span class="ib-v gold">P${period}</span></div>
+    <div class="ib"><span class="ib-l">House Pillar 宅干支</span><span class="ib-v">${hp.pillar} · ${SE_EN[hp.stem]} ${BR_EN[hp.branch]}</span></div>
+    <div class="ib"><span class="ib-l">Lead Stem 符首</span><span class="ib-v">${qmData.leadStem} ${SE_EN[qmData.leadStem]}</span></div>
+    <div class="ib"><span class="ib-l">Mountain (24)</span><span class="ib-v">${M24[facing+(doorSub==='1'?'1':'2')]||''}</span></div>
+  </div>`;
+
+  // Grid — rotated so FACING is at top-center
+  // Direction layout grid (by facing):
+  const GRID_LAYOUT = {
+    'N': ['NW','N','NE','W','C','E','SW','S','SE'],
+    'NE':['N','NE','E','NW','C','SE','W','SW','S'],
+    'E': ['NE','E','SE','N','C','S','NW','W','SW'],
+    'SE':['E','SE','S','NE','C','SW','N','NW','W'],
+    'S': ['SE','S','SW','E','C','W','NE','N','NW'],
+    'SW':['S','SW','W','SE','C','NW','E','NE','N'],
+    'W': ['SW','W','NW','S','C','N','SE','E','NE'],
+    'NW':['W','NW','N','SW','C','NE','SE','S','E'],
+  };
+  const layout = GRID_LAYOUT[facing] || GRID_LAYOUT['E'];
+  const topRow = [layout[0],layout[1],layout[2]];
+  const midRow = [layout[3],'C',layout[5]];
+  const botRow = [layout[6],layout[7],layout[8]];
+
+  // Compass labels for top/sides/bottom
+  html += `<div class="top-compass">
+    <div class="tc">${layout[0]}</div>
+    <div class="tc" style="color:var(--terra);font-size:.75rem;">▲ ${facing} (Facing)</div>
+    <div class="tc">${layout[2]}</div>
+  </div>`;
+
+  html += `<div class="grid9">`;
+  for(const dir of layout){
+    const pid = dir.toLowerCase();
+    const isCenter = dir === 'C';
+    const es = isCenter?(qmData.EP['c']||'—'):(qmData.EP[pid]||'—');
+    const hs = isCenter?(qmData.HP['c']||'—'):(qmData.HP[pid]||'—');
+    const door = isCenter?null:qmData.DP[pid];
+    const star = qmData.SP[pid.replace('c','c')];
+    const deity = isCenter?null:qmData.DEP[pid];
+    const xk = xkData?xkData[pid]:[0,0,0];
+    const isLS = pid === qmData.chiefPal;
+
+    html += `<div class="pal ${isCenter?'center':''}">
+      ${isLS?'<div class="pal-markers"><span class="mk mk-ls">Lead</span></div>':''}
+      <div class="pal-dir">${dir}</div>
+      <div class="pal-trig" style="font-size:.45rem;color:var(--gold2);font-weight:700;">
+        ${xk?xk[0]+'▲ '+xk[1]+'◆ '+xk[2]:''}
+      </div>
+      <div class="pal-top">
+        <div class="pal-hstem">${hs}</div>
+        <div class="pal-top-right">
+          ${deity?`<div class="pal-deity">${deity.zh} ${deity.en}</div>`:''}
+          ${star?`<div class="pal-star">${star.zh} ${star.en}</div>`:''}
+        </div>
+      </div>
+      <div class="pal-div"></div>
+      <div class="pal-bot">
+        <div class="pal-estem">${es}</div>
+        ${door?`<div class="pal-door ${door.q}">${door.zh} ${door.en}</div>`:'<div></div>'}
+        <div class="pal-num">${xk?xk[2]:''}</div>
+      </div>
+    </div>`;
+  }
+  html += `</div>`;
+
+  html += `<div class="bot-compass">
+    <div class="tc">${layout[6]}</div>
+    <div class="tc">Sitting (Back)</div>
+    <div class="tc">${layout[8]}</div>
+  </div>`;
+
+  // XK Legend
+  html += `<div class="datos"><h3>Xuan Kong Flying Stars · Period ${period}</h3>
+    <div class="datos-grid">
+      <div class="dr"><span class="dl">Chart:</span><span class="dv">Facing ${facing}${doorSub==='1'?'1':'2/3'} · Period ${period}</span></div>
+      <div class="dr"><span class="dl">Numbers:</span><span class="dv">▲ Sitting · ◆ Facing · Base</span></div>
+      <div class="dr"><span class="dl">House Pillar:</span><span class="dv">${hp.pillar}</span></div>
+      <div class="dr"><span class="dl">Period Range:</span><span class="dv">${period===7?'1984-2004':period===8?'2004-2024':'2024-2044'}</span></div>
+    </div>
+  </div>`;
+
+  // QM Feng Shui Legend
+  html += `<div class="legend">
+    <div class="lg-g"><span class="lg-t">QM Stems</span><div class="lg-items">
+      <span class="lg-i"><span class="lg-dot" style="background:var(--heaven)"></span>Heaven 天 (top)</span>
+      <span class="lg-i"><span class="lg-dot" style="background:var(--earth)"></span>Earth 地 (bottom)</span>
+    </div></div>
+    <div class="lg-g"><span class="lg-t">XK Stars (small numbers)</span><div class="lg-items">
+      <span class="lg-i">▲ Sitting (Mountain) · ◆ Facing (Water) · Base (large)</span>
+    </div></div>
+    <div class="lg-g"><span class="lg-t">Doors</span><div class="lg-items">
+      <span class="lg-i" style="color:var(--green)">✅ Open·Rest·Life</span>
+      <span class="lg-i" style="color:var(--red)">❌ Death·Harm·Fear</span>
+    </div></div>
+  </div>`;
+
+  return html;
+}
+
+function plotFS(){
+  document.getElementById('fsc').innerHTML = renderFengShui();
+}
+
+// ═══ AUTO STRUCTURE CALCULATOR ═══════════════════════
+// Anchor verified against real charts:
+// Jun 9 2026 = Yang 9 (confirmed from real chart)
+const ANCHOR_DATE = new Date(2026, 5, 9); // Jun 9 2026
+const ANCHOR_STRUCT = 9;
+
+// Solar terms 2026 (approximate — for Yang/Yin determination)
+// Yang Dun: Winter Solstice → Summer Solstice
+// Yin Dun:  Summer Solstice → Winter Solstice
+const SOLSTICES_2026 = {
+  summerSolstice: new Date(2026, 5, 21),  // Jun 21
+  winterSolstice: new Date(2026, 11, 22), // Dec 22
+};
+const SOLSTICES_2025 = {
+  summerSolstice: new Date(2025, 5, 21),
+  winterSolstice: new Date(2025, 11, 22),
+};
+
+function isYangPeriod(date) {
+  // Yang: after winter solstice, before summer solstice
+  const yr = date.getFullYear();
+  // Approximate solstice dates
+  const winterPrev = new Date(yr-1, 11, 22);
+  const summerThis = new Date(yr, 5, 21);
+  const winterThis = new Date(yr, 11, 22);
+  const summerNext = new Date(yr+1, 5, 21);
+  return (date >= winterPrev && date < summerThis) ||
+         (date >= winterThis && date < summerNext);
+}
+
+// ═══ SOLAR TERMS & YUAN STRUCTURE ═══════════════════════
+// Source: Joey Yap Compendium p.119-128, verified vs real charts
+// Each solar term has Upper/Middle/Lower yuan structure numbers
+const SOLAR_TERMS = [
+  // 2025 Yang period
+  {name:'小雪',start:[2025,11,22],upper:4,middle:7,lower:1,isYin:true},
+  {name:'大雪',start:[2025,12,7], upper:7,middle:4,lower:1,isYin:true},
+  {name:'冬至',start:[2025,12,22],upper:1,middle:7,lower:4,isYin:false},
+  // 2026
+  {name:'小寒',start:[2026,1,5],  upper:8,middle:5,lower:2,isYin:false},
+  {name:'大寒',start:[2026,1,20], upper:2,middle:8,lower:5,isYin:false},
+  {name:'立春',start:[2026,2,4],  upper:8,middle:5,lower:2,isYin:false},
+  {name:'雨水',start:[2026,2,18], upper:2,middle:5,lower:8,isYin:false},
+  {name:'驚蟄',start:[2026,3,6],  upper:3,middle:6,lower:9,isYin:false},
+  {name:'春分',start:[2026,3,20], upper:9,middle:6,lower:3,isYin:false},
+  {name:'清明',start:[2026,4,4],  upper:3,middle:9,lower:6,isYin:false},
+  {name:'穀雨',start:[2026,4,20], upper:9,middle:3,lower:6,isYin:false},
+  {name:'立夏',start:[2026,5,5],  upper:9,middle:6,lower:3,isYin:false},
+  {name:'小滿',start:[2026,5,21], upper:3,middle:9,lower:6,isYin:false},
+  {name:'芒種',start:[2026,6,5],  upper:6,middle:3,lower:9,isYin:false},
+  {name:'夏至',start:[2026,6,21], upper:9,middle:3,lower:6,isYin:true},
+  {name:'小暑',start:[2026,7,7],  upper:8,middle:2,lower:5,isYin:true},
+  {name:'大暑',start:[2026,7,22], upper:5,middle:2,lower:8,isYin:true},
+  {name:'立秋',start:[2026,8,7],  upper:2,middle:8,lower:5,isYin:true},
+  {name:'處暑',start:[2026,8,23], upper:8,middle:5,lower:2,isYin:true},
+  {name:'白露',start:[2026,9,7],  upper:4,middle:7,lower:1,isYin:true},
+  {name:'秋分',start:[2026,9,23], upper:1,middle:7,lower:4,isYin:true},
+  {name:'寒露',start:[2026,10,8], upper:4,middle:1,lower:7,isYin:true},
+  {name:'霜降',start:[2026,10,23],upper:7,middle:1,lower:4,isYin:true},
+  {name:'立冬',start:[2026,11,7], upper:1,middle:4,lower:7,isYin:true},
+  {name:'小雪',start:[2026,11,22],upper:4,middle:7,lower:1,isYin:true},
+  {name:'大雪',start:[2026,12,7], upper:7,middle:4,lower:1,isYin:true},
+  {name:'冬至',start:[2026,12,21],upper:1,middle:7,lower:4,isYin:false},
+];
+
+// Lead Days (符頭) — 甲/己 days and their Yuan type
+// Branch → Yuan: 子午卯酉=Upper, 寅申巳亥=Middle, 辰戌丑未=Lower
+const LEAD_DAY_YUAN = {
+  '甲子':'upper','甲午':'upper','己卯':'upper','己酉':'upper',
+  '甲寅':'middle','甲申':'middle','己巳':'middle','己亥':'middle',
+  '甲辰':'lower','甲戌':'lower','己丑':'lower','己未':'lower',
+};
+
+// 60-day cycle to find lead day for any date
+const BRANCHES12 = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+// Anchor: Jun 9 2026 = 甲寅 (day 51 in 60-cycle, 0-indexed=50)
+const GANZHI_ANCHOR = new Date(2026,5,9); // 甲寅
+const GANZHI_ANCHOR_IDX = 50; // 甲寅 in 60-cycle (0-based)
+
+function dayPillarIdx(date) {
+  const diff = Math.round((date - GANZHI_ANCHOR) / 86400000);
+  return ((GANZHI_ANCHOR_IDX + diff) % 60 + 60) % 60;
+}
+
+function dayPillar(date) {
+  const idx = dayPillarIdx(date);
+  return STEMS10[idx%10] + BRANCHES12[idx%12];
+}
+
+function getLeadDay(date) {
+  // Find most recent 甲 or 己 day on or before date
+  for (let d = 0; d <= 9; d++) {
+    const check = new Date(date - d*86400000);
+    const p = dayPillar(check);
+    if (p[0]==='甲' || p[0]==='己') return p;
+  }
+  return null;
+}
+
+function getSolarTerm(date) {
+  let term = null;
+  for (let i = SOLAR_TERMS.length-1; i >= 0; i--) {
+    const [y,m,day] = SOLAR_TERMS[i].start;
+    if (date >= new Date(y,m-1,day)) { term = SOLAR_TERMS[i]; break; }
+  }
+  return term;
+}
+
+// DAY chart structure = daily star from calendar (Yang: +1/day, Yin: -1/day, anchored at solstice)
+// Anchor: Jun 9 2026 甲寅 (idx50) = star 9, Yang period
+function dayStarStructure(date) {
+  const yang = isYangPeriod(date);
+  const idx = dayPillarIdx(date);
+  const anchorIdx = 50; // 甲寅 Jun 9
+  const anchorStar = 9;
+  const diff = idx - anchorIdx;
+  let s;
+  if (yang) {
+    s = ((diff + anchorStar - 1) % 9 + 9) % 9 + 1;
+  } else {
+    // Yin period counts DOWN from solstice
+    s = ((anchorStar - 1 - diff) % 9 + 9*100) % 9 + 1;
+  }
+  return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s };
+}
+
+// HOUR chart structure = Yuan (Zhi Run) method
+function autoStructure(date) {
+  const term = getSolarTerm(date);
+  if (!term) {
+    const yang = isYangPeriod(date);
+    const diff = Math.round((date - ANCHOR_DATE) / 86400000);
+    let s = ((ANCHOR_STRUCT + diff - 1) % 9 + 9) % 9 + 1;
+    return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s, term:'?' };
+  }
+  const leadDay = getLeadDay(date);
+  const yuan = leadDay ? (LEAD_DAY_YUAN[leadDay] || 'upper') : 'upper';
+  const s = term[yuan];
+  return { struct: s, isYin: term.isYin, key: (term.isYin?'yin':'yang')+s,
+           term: term.name, yuan, leadDay: leadDay||'?' };
+}
+
+// Auto-fill structure when date changes
+function autoFillStructure() {
+  const dateVal = document.getElementById('iDate').value;
+  if (!dateVal) return;
+  const [yr, mo, dy] = dateVal.split('-').map(Number);
+  const date = new Date(yr, mo-1, dy);
+  const result = dayStarStructure(date);
+  const hourResult = autoStructure(date);
+  document.getElementById('iStruct').value = result.key;
+  const ind = document.getElementById('struct-auto');
+  if (ind) {
+    const yy = result.isYin ? 'Yin' : 'Yang';
+    const hy = hourResult.isYin ? 'Yin' : 'Yang';
+    ind.textContent = `⚡ Día: ${yy} ${result.struct} · Hora: ${hy} ${hourResult.struct} (${hourResult.term} ${hourResult.yuan||''})`;
+  }
+  // Auto-select day pillar from date
+  const pillar = dayPillar(date);
+  const STEMS_EN_MAP={'甲':'jia','乙':'yi','丙':'bing','丁':'ding','戊':'wu','己':'ji','庚':'geng','辛':'xin','壬':'ren','癸':'gui'};
+  const BR_EN_MAP={'子':'zi','丑':'chou','寅':'yin','卯':'mao','辰':'chen','巳':'si','午':'wu','未':'wei','申':'shen','酉':'you','戌':'xu','亥':'hai'};
+  const key = STEMS_EN_MAP[pillar[0]] + BR_EN_MAP[pillar[1]];
+  const daySelect = document.getElementById('iDay');
+  if (daySelect && DAY_MAP[key]) daySelect.value = key;
+}
+
+// Month & Year pillars + structures (verified vs real Joey Yap/Paola charts)
+// Year 2026 丙午 = Yin 1 | Month Jun 2026 甲午 (Jun5-Jul6) = Yin 7
+const MONTH_PILLAR='甲午';
+const YEAR_PILLAR='丙午';
+const MONTH_STRUCT='yin7';
+const YEAR_STRUCT='yin1';
+
+function plotAll(){
+  const ds=document.getElementById('iDate').value;
+  const ts=document.getElementById('iTime').value;
+  const dk=document.getElementById('iDay').value;
+  const h=parseInt(ts.split(':')[0]);
+  const [yr,mo,dyy]=ds.split('-').map(Number);
+  const dateObj=new Date(yr,mo-1,dyy);
+  const hourStruct=autoStructure(dateObj).key;   // Yuan method
+  const dayStruct=dayStarStructure(dateObj).key;  // calendar daily star
+  document.getElementById('hc').innerHTML=renderChart(ds,h,compute(hourStruct,dk,h,'h'),'h');
+  document.getElementById('dc').innerHTML=renderChart(ds,h,compute(dayStruct,dk,h,'d'),'d');
+  document.getElementById('mc').innerHTML=renderChart(ds,h,compute(MONTH_STRUCT,dk,h,'m'),'m');
+  document.getElementById('yc').innerHTML=renderChart(ds,h,compute(YEAR_STRUCT,dk,h,'y'),'y');
+}
+
+function sw(t){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.cp').forEach(p=>p.classList.remove('on'));
+  document.querySelector(`[onclick="sw('${t}')"]`).classList.add('on');
+  document.getElementById('p'+t).classList.add('on');
+  if(t==='fs' && !document.getElementById('fsc').innerHTML) plotFS();
+}
+
+function copyText(){
+  // Generate KIRO standard text format from current chart data
+  const ds=document.getElementById('iDate').value;
+  const ts=document.getElementById('iTime').value;
+  const sk=document.getElementById('iStruct').value;
+  const dk=document.getElementById('iDay').value;
+  const h=parseInt(ts.split(':')[0]);
+  const activeTab=document.querySelector('.cp.on').id; // ph/pd/pm/py/pfs
+  const typeMap={ph:'h',pd:'d',pm:'m',py:'y'};
+  const cType=typeMap[activeTab]||'d';
+  const isHour=cType==='h';
+  const [cyr,cmo,cdy]=ds.split('-').map(Number);
+  const cDate=new Date(cyr,cmo-1,cdy);
+  const skUse=cType==='m'?MONTH_STRUCT:cType==='y'?YEAR_STRUCT:cType==='h'?autoStructure(cDate).key:dayStarStructure(cDate).key;
+  const d=compute(skUse,dk,h,cType);
+  const tipoMap={h:'DE LA HORA',d:'DEL DÍA',m:'DEL MES',y:'DEL AÑO'};
+
+  const SE_R={'戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui','丁':'Ding','丙':'Bing','乙':'Yi','甲':'Jia'};
+  const BR_R={'子':'Zi Rat','丑':'Chou Ox','寅':'Yin Tiger','卯':'Mao Rabbit','辰':'Chen Dragon','巳':'Si Snake','午':'Wu Horse','未':'Wei Goat','申':'Shen Monkey','酉':'You Rooster','戌':'Xu Dog','亥':'Hai Pig'};
+  const [yr,mo,dy]=ds.split('-');
+  const months=['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  const fecha=parseInt(dy)+' '+months[parseInt(mo)]+' '+yr;
+  const tipo=tipoMap[cType];
+  const pol=d.isYin?'Yin':'Yang';
+
+  let txt='CARTA '+tipo+': '+fecha+'\n';
+  if(isHour) txt+='Hora: '+ts+' - '+(d.hBr?BR_R[d.hBr].split(' ')[0]:'')+'\nTallo de la hora: '+SE_R[d.hStem]+' | Tallo del dia: '+SE_R[d.dStem]+'\n';
+  else txt+='Tallo del dia: '+SE_R[d.dStem]+'\n';
+  txt+='Lead Stem: '+SE_R[d.leadStem]+' | Envoy: '+d.envoy+' Door '+d.envoyPal.toUpperCase()+'\n';
+  txt+='DE: '+(BR_R[d.de[0]]||'-')+' / '+(BR_R[d.de[1]]||'-')+' | JIA: '+d.chiefPal.toUpperCase()+'\n';
+  txt+='Estructura: '+pol+' '+d.sNum+(d.fuYin?' - Fu Yin':'')+'\n\n';
+
+  txt+='Dir | # | Cielo/Tierra | Estrella | Puerta | Deidad | Formaciones\n';
+  const dirs=['se','s','sw','e','w','ne','n','nw'];
+  for(const p of dirs){
+    const num=getFlyingNum(p,d.sNum);
+    const ct=SE_R[d.HP[p]]+'/'+SE_R[d.EP[p]];
+    const star=d.SP[p]?d.SP[p].en:'-';
+    const door=d.DP[p]?d.DP[p].en:'-';
+    const deity=d.DEP[p]?d.DEP[p].en:'-';
+    let form=[];
+    if(p===d.chiefPal)form.push('Lead/JIA');
+    if(p===d.leadEarthPal&&p!==d.chiefPal)form.push('Lead Stem');
+    if(p===d.envoyPal)form.push('Envoy');
+    if(d.dePals.includes(p))form.push('DE');
+    if(d.fuYin)form.push('Fu Yin');
+    txt+=p.toUpperCase().padEnd(3)+' | '+num+' | '+ct.padEnd(12)+' | '+star.padEnd(10)+' | '+door.padEnd(8)+' | '+deity.padEnd(7)+' | '+(form.join('/')||'*')+'\n';
+  }
+  const cnum=d.sNum;
+  txt+='C   | '+cnum+' | '+SE_R[d.HP.c]+'/'+SE_R[d.EP.c]+'       | Bird       | -        | -       | *\n\n';
+
+  txt+='4 TALLOS EN LA CARTA:\n';
+  const stems=[['壬','Ren','Self'],['辛','Xin','EI'],['甲','Jia','Rival'],['戊','Wu','Liderazgo']];
+  for(const[st,rom,role]of stems){
+    let loc='-',num='-';
+    if(st==='甲'){loc=d.chiefPal.toUpperCase();num=getFlyingNum(d.chiefPal,d.sNum);}
+    else{
+      let found=false;
+      for(const p of dirs)if(d.HP[p]===st){loc=p.toUpperCase();num=getFlyingNum(p,d.sNum);found=true;break;}
+      if(!found&&d.EP.c===st){loc='Centro';num=d.sNum;}
+    }
+    const star=loc!=='-'&&loc!=='Centro'?(d.SP[loc.toLowerCase()]?d.SP[loc.toLowerCase()].en:''):'Bird';
+    const door=loc!=='-'&&loc!=='Centro'?(d.DP[loc.toLowerCase()]?d.DP[loc.toLowerCase()].en:''):'';
+    const deity=loc!=='-'&&loc!=='Centro'?(d.DEP[loc.toLowerCase()]?d.DEP[loc.toLowerCase()].en:''):'';
+    const comps=[star,door,deity].filter(x=>x).join('/');
+    txt+=st+' '+rom+' ('+role+'): Palacio '+num+' '+loc+' - '+comps+'\n';
+  }
+
+  navigator.clipboard.writeText(txt).then(()=>{
+    const b=document.querySelector('.btn-copy');
+    const o=b.textContent;b.textContent='✓ Copiado!';setTimeout(()=>b.textContent=o,1500);
+  }).catch(()=>{
+    // Fallback for older browsers
+    const ta=document.createElement('textarea');
+    ta.value=txt;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    const b=document.querySelector('.btn-copy');
+    const o=b.textContent;b.textContent='✓ Copiado!';setTimeout(()=>b.textContent=o,1500);
+  });
+}
+
+window.onload=()=>{
+  // Set date to today
+  const now=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  document.getElementById('iDate').value=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+  document.getElementById('iTime').value=pad(now.getHours())+':'+pad(now.getMinutes());
+  autoFillStructure();
+  plotAll();
+  document.getElementById('iDate').addEventListener('change', ()=>{
+    autoFillStructure();
+    plotAll();
+  });
+};
+</script>
+</body>
+</html>
