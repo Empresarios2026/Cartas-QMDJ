@@ -425,9 +425,13 @@ function compute(sk,dk,h,chartType){
     // Active stem at center: borrows SW (validated 9 jun day 甲寅 with 癸 center)
     if(!chiefPal) chiefPal='sw';
   }
-  let leadEarthPal=null;
+  let leadEarthPal=null, leadInCenter=false;
   for(const[p,s]of Object.entries(EP))if(s===leadStem&&p!=='c'){leadEarthPal=p;break;}
-  if(!leadEarthPal)leadEarthPal='sw';
+  if(!leadEarthPal){
+    // Lead stem in center: borrows SW for plate position, but envoy flies from center (LS5)
+    leadEarthPal='sw';
+    leadInCenter=true;
+  }
 
   const offset=(CW8.indexOf(chiefPal)-CW8.indexOf(leadEarthPal)+8)%8;
 
@@ -444,7 +448,8 @@ function compute(sk,dk,h,chartType){
   const posInStream=STREAM_POS[activeStem]||1;
   const LS_OF_PAL={n:1,sw:2,e:3,se:4,c:5,nw:6,w:7,ne:8,s:9};
   const PAL_OF_LS={1:'n',2:'sw',3:'e',4:'se',5:'c',6:'nw',7:'w',8:'ne',9:'s'};
-  let envoyLS=LS_OF_PAL[leadEarthPal]+(isYin?-(posInStream-1):(posInStream-1));
+  const envoyBaseLS=leadInCenter?5:LS_OF_PAL[leadEarthPal];
+  let envoyLS=envoyBaseLS+(isYin?-(posInStream-1):(posInStream-1));
   envoyLS=((envoyLS-1)%9+9)%9+1;
   let envoyPal=PAL_OF_LS[envoyLS];
   if(envoyPal==='c')envoyPal='sw'; // center borrows SW
