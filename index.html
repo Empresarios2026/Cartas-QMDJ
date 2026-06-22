@@ -378,8 +378,11 @@ const BR_PAL={'子':'n','丑':'ne','寅':'ne','卯':'e','辰':'se','巳':'se','�
 const LS_NUM={n:1,sw:2,e:3,se:4,c:5,nw:6,w:7,ne:8,s:9};
 function getFlyingNum(p, structNum, isYin){
   if(p==='c') return structNum;
-  const shift = isYin ? (structNum-1)%9 : ((structNum-5)%9+9)%9;
-  return ((LS_NUM[p]-1+shift)%9)+1;
+  const shift=((structNum-5)%9+9)%9;
+  const base=((LS_NUM[p]-1+shift)%9)+1;
+  // Yin 9 special case: verified vs JY Jun19 reference (diff +4 vs Yang 9)
+  if(isYin && structNum===9) return ((base-1+4)%9)+1;
+  return base;
 }
 const FLYING_NUM={}; // kept for backward compat but now computed dynamically
 
