@@ -887,7 +887,7 @@ function getLeadDay(date) {
   for (let d = 0; d <= 9; d++) {
     const check = new Date(date - d*86400000);
     const p = dayPillar(check);
-    if (p[0]==='甲' || p[0]==='己') return p;
+    if (p[0]==='甲' || p[0]==='己') return { pillar: p, date: new Date(check) };
   }
   return null;
 }
@@ -901,26 +901,46 @@ function getSolarTerm(date) {
   return term;
 }
 
-// DAY chart structure = daily star from calendar (Yang: +1/day, Yin: -1/day, anchored at solstice)
-// Anchor: Jun 9 2026 甲寅 (idx50) = star 9, Yang period
-function dayStarStructure(date) {
-  const yang = isYangPeriod(date);
-  const idx = dayPillarIdx(date);
-  const anchorIdx = 50; // 甲寅 Jun 9
-  const anchorStar = 9;
-  const diff = idx - anchorIdx;
-  let s;
-  if (yang) {
-    s = ((diff + anchorStar - 1) % 9 + 9) % 9 + 1;
-  } else {
-    // Yin period counts DOWN from solstice
-    s = ((anchorStar - 1 - diff) % 9 + 9*100) % 9 + 1;
+function getNextSolarTerm(date) {
+  for (let i = 0; i < SOLAR_TERMS.length; i++) {
+    const [y,m,day] = SOLAR_TERMS[i].start;
+    if (new Date(y,m-1,day) > date) return { term: SOLAR_TERMS[i], start: new Date(y,m-1,day) };
   }
-  return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s };
+  return null;
+}
+
+// DAY chart structure = daily star from calendar
+// Yang +1/day | Yin -1/day
+// Ascending Qi rule: Yin period starts at Lead Day of Xia Zhi (Jun 19 甲子), not Jun 21.
+// Anchors verified vs Joey Yap: Yang=Jun9 甲寅 star9 | Yin=Jun19 甲子 star9
+const DAY_YANG_ANCHOR = new Date(2026,5,9);
+const DAY_YANG_STAR = 9;
+const DAY_YIN_ANCHOR = new Date(2026,5,19);
+const DAY_YIN_STAR = 9;
+const DAY_YIN_START = new Date(2026,5,19);
+const DAY_YIN_END   = new Date(2026,11,21);
+
+function dayStarStructure(date) {
+  const isYin = (date >= DAY_YIN_START && date < DAY_YIN_END);
+  let s;
+  if (isYin) {
+    const diff = Math.round((date - DAY_YIN_ANCHOR) / 86400000);
+    s = ((DAY_YIN_STAR - 1 - diff) % 9 + 9*100) % 9 + 1;
+  } else {
+    const diff = Math.round((date - DAY_YANG_ANCHOR) / 86400000);
+    s = ((DAY_YANG_STAR - 1 + diff) % 9 + 9) % 9 + 1;
+  }
+  return { struct: s, isYin, key: (isYin?'yin':'yang')+s };
 }
 
 // HOUR chart structure = Yuan (Zhi Run) method
+// Ascending Qi 超神: if Lead Day falls before the next term start by <5 days,
+// it already belongs to that next term's Upper Yuan → use next term.
 function autoStructure(date) {
+  const leadDayResult = getLeadDay(date);
+  const leadDay = leadDayResult ? leadDayResult.pillar : null;
+  const leadDate = leadDayResult ? leadDayResult.date : null;
+
   const term = getSolarTerm(date);
   if (!term) {
     const yang = isYangPeriod(date);
@@ -928,11 +948,22 @@ function autoStructure(date) {
     let s = ((ANCHOR_STRUCT + diff - 1) % 9 + 9) % 9 + 1;
     return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s, term:'?' };
   }
-  const leadDay = getLeadDay(date);
+
+  // Check Ascending Qi 超神: does the Lead Day fall before the NEXT term, within <5 days?
+  const nextTermInfo = getNextSolarTerm(date);
+  let activeTerm = term;
+  if (nextTermInfo && leadDate) {
+    const daysToNextTerm = Math.round((nextTermInfo.start - leadDate) / 86400000);
+    // Lead Day is before the next term AND within 4 days → Ascending Qi → belongs to next term
+    if (daysToNextTerm >= 0 && daysToNextTerm < 5) {
+      activeTerm = nextTermInfo.term;
+    }
+  }
+
   const yuan = leadDay ? (LEAD_DAY_YUAN[leadDay] || 'upper') : 'upper';
-  const s = term[yuan];
-  return { struct: s, isYin: term.isYin, key: (term.isYin?'yin':'yang')+s,
-           term: term.name, yuan, leadDay: leadDay||'?' };
+  const s = activeTerm[yuan];
+  return { struct: s, isYin: activeTerm.isYin, key: (activeTerm.isYin?'yin':'yang')+s,
+           term: activeTerm.name, yuan, leadDay: leadDay||'?' };
 }
 
 // Auto-fill structure when date changes
