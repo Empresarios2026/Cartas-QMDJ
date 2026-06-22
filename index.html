@@ -376,9 +376,9 @@ const BR_PAL={'子':'n','丑':'ne','寅':'ne','卯':'e','辰':'se','巳':'se','�
 // Formula: flyNum[p] = ((LS[p] - 1 + (structNum - 5 + 9)) % 9) + 1
 // Verified: Yang1✓ Yang6✓ Yang8✓ Yang9✓
 const LS_NUM={n:1,sw:2,e:3,se:4,c:5,nw:6,w:7,ne:8,s:9};
-function getFlyingNum(p, structNum){
+function getFlyingNum(p, structNum, isYin){
   if(p==='c') return structNum;
-  const shift=((structNum-5)%9+9)%9;
+  const shift = isYin ? (structNum-1)%9 : ((structNum-5)%9+9)%9;
   return ((LS_NUM[p]-1+shift)%9)+1;
 }
 const FLYING_NUM={}; // kept for backward compat but now computed dynamically
@@ -497,7 +497,7 @@ function renderChart(dateStr,h,data,type){
   const{isYin,sNum,EP,HP,DP,SP,DEP,leadStem,chiefPal,leadEarthPal,dStem,dBranch,dPillar,dRoman,dAnimal,hStem,hBr,de,dePals,envoy,envoyPal,fuYin,sKey}=data;
   const pol=isYin?'Yin 陰':'Yang 陽';
   const typeLabel={h:'Hour 時盤',d:'Day 日盤',m:'Month 月盤',y:'Year 年盤'}[type];
-  const NUM={}; for(const p of ['se','s','sw','e','c','w','ne','n','nw']) NUM[p]=getFlyingNum(p,sNum);
+  const NUM={}; for(const p of ['se','s','sw','e','c','w','ne','n','nw']) NUM[p]=getFlyingNum(p,sNum,isYin);
 
   const yr=parseInt(dateStr.split('-')[0]),mo=parseInt(dateStr.split('-')[1]);
   const YR={2025:'乙巳 Yi Si',2026:'丙午 Bing Wu',2027:'丁未 Ding Wei'};
@@ -1055,7 +1055,7 @@ function copyText(){
   txt+='Dir | # | Cielo/Tierra | Estrella | Puerta | Deidad | Formaciones\n';
   const dirs=['se','s','sw','e','w','ne','n','nw'];
   for(const p of dirs){
-    const num=getFlyingNum(p,d.sNum);
+    const num=getFlyingNum(p,d.sNum,d.isYin);
     const ct=SE_R[d.HP[p]]+'/'+SE_R[d.EP[p]];
     const star=d.SP[p]?d.SP[p].en:'-';
     const door=d.DP[p]?d.DP[p].en:'-';
@@ -1075,10 +1075,10 @@ function copyText(){
   const stems=[['壬','Ren','Self'],['辛','Xin','EI'],['甲','Jia','Rival'],['戊','Wu','Liderazgo']];
   for(const[st,rom,role]of stems){
     let loc='-',num='-';
-    if(st==='甲'){loc=d.chiefPal.toUpperCase();num=getFlyingNum(d.chiefPal,d.sNum);}
+    if(st==='甲'){loc=d.chiefPal.toUpperCase();num=getFlyingNum(d.chiefPal,d.sNum,d.isYin);}
     else{
       let found=false;
-      for(const p of dirs)if(d.HP[p]===st){loc=p.toUpperCase();num=getFlyingNum(p,d.sNum);found=true;break;}
+      for(const p of dirs)if(d.HP[p]===st){loc=p.toUpperCase();num=getFlyingNum(p,d.sNum,d.isYin);found=true;break;}
       if(!found&&d.EP.c===st){loc='Centro';num=d.sNum;}
     }
     const star=loc!=='-'&&loc!=='Centro'?(d.SP[loc.toLowerCase()]?d.SP[loc.toLowerCase()].en:''):'Bird';
