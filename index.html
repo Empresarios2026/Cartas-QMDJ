@@ -995,7 +995,9 @@ function autoFillStructure() {
 
 // ═══ YEAR STRUCTURE TABLE ══════════════════════
 // Source: QMDJ Month Charts Joey Yap — year pillar → month Yin structure
-const YEAR_STRUCT_MAP={'丙午':'yin7','丁未':'yin4','戊申':'yin1','己酉':'yin7','庚戌':'yin4'};
+const YEAR_STRUCT_MAP={'丙午':'yin7','丁未':'yin4','戊申':'yin1','己酉':'yin7','庚戌':'yin4'}; // month struct by year pillar
+// Year chart structure by year pillar (Source: Compendium)
+const YEAR_CHART_STRUCT_MAP={'乙巳':'yin4','丙午':'yin1','丁未':'yin7','戊申':'yin4','己酉':'yin1','庚戌':'yin7'};
 const YEAR_PILLAR_MAP={2025:'乙巳',2026:'丙午',2027:'丁未',2028:'戊申',2029:'己酉',2030:'庚戌'};
 
 // ═══ SOLAR MONTH PILLARS 2026 ════════════════
@@ -1037,7 +1039,8 @@ function plotAll(){
   document.getElementById('hc').innerHTML=renderChart(ds,h,compute(hourStruct,dk,h,'h'),'h');
   document.getElementById('dc').innerHTML=renderChart(ds,h,compute(dayStruct,dk,h,'d'),'d');
   document.getElementById('mc').innerHTML=renderChart(ds,h,compute(monthStruct,dk,h,'m',monthPillar),'m');
-  document.getElementById('yc').innerHTML=renderChart(ds,h,compute(YEAR_STRUCT,dk,h,'y',yearPillar),'y');
+  const yearChartStruct=YEAR_CHART_STRUCT_MAP[yearPillar]||'yin1';
+  document.getElementById('yc').innerHTML=renderChart(ds,h,compute(yearChartStruct,dk,h,'y',yearPillar),'y');
 }
 
 function sw(t){
@@ -1064,7 +1067,8 @@ function copyText(){
   const monthPillar2=getMonthPillar(cDate);
   const yearPillar2=getYearPillar(cDate);
   const monthStruct2=YEAR_STRUCT_MAP[yearPillar2]||'yin7';
-  const skUse=cType==='m'?monthStruct2:cType==='y'?YEAR_STRUCT:cType==='h'?autoStructure(cDate).key:dayStarStructure(cDate).key;
+  const yearChartStruct2=YEAR_CHART_STRUCT_MAP[yearPillar2]||'yin1';
+  const skUse=cType==='m'?monthStruct2:cType==='y'?yearChartStruct2:cType==='h'?autoStructure(cDate).key:dayStarStructure(cDate).key;
   const overP=cType==='m'?monthPillar2:cType==='y'?yearPillar2:null;
   const d=compute(skUse,dk,h,cType,overP);
   const tipoMap={h:'DE LA HORA',d:'DEL DÍA',m:'DEL MES',y:'DEL AÑO'};
