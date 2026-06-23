@@ -402,8 +402,8 @@ function compute(sk,dk,h,chartType,overridePillar){
   const hStem=(HR_CYCLE[dStem]||HR_CYCLE['甲'])[hIdx];
   const hPillar=hStem+hBr;
   const dPillar=dStem+dBranch;
-  const mp=overridePillar||(typeof MONTH_PILLAR!=='undefined'?MONTH_PILLAR:'甲午');
-  const yp=overridePillar||(typeof YEAR_PILLAR!=='undefined'?YEAR_PILLAR:'丙午');
+  const mp=(chartType==='m'&&overridePillar)?overridePillar:(typeof MONTH_PILLAR!=='undefined'?MONTH_PILLAR:'甲午');
+  const yp=(chartType==='y'&&overridePillar)?overridePillar:(typeof YEAR_PILLAR!=='undefined'?YEAR_PILLAR:'丙午');
 
   // Active stem by chart type
   let activeStem, activePillar;
@@ -1061,8 +1061,12 @@ function copyText(){
   const isHour=cType==='h';
   const [cyr,cmo,cdy]=ds.split('-').map(Number);
   const cDate=new Date(cyr,cmo-1,cdy);
-  const skUse=cType==='m'?MONTH_STRUCT:cType==='y'?YEAR_STRUCT:cType==='h'?autoStructure(cDate).key:dayStarStructure(cDate).key;
-  const d=compute(skUse,dk,h,cType);
+  const monthPillar2=getMonthPillar(cDate);
+  const yearPillar2=getYearPillar(cDate);
+  const monthStruct2=YEAR_STRUCT_MAP[yearPillar2]||'yin7';
+  const skUse=cType==='m'?monthStruct2:cType==='y'?YEAR_STRUCT:cType==='h'?autoStructure(cDate).key:dayStarStructure(cDate).key;
+  const overP=cType==='m'?monthPillar2:cType==='y'?yearPillar2:null;
+  const d=compute(skUse,dk,h,cType,overP);
   const tipoMap={h:'DE LA HORA',d:'DEL DÍA',m:'DEL MES',y:'DEL AÑO'};
 
   const SE_R={'戊':'Wu','己':'Ji','庚':'Geng','辛':'Xin','壬':'Ren','癸':'Gui','丁':'Ding','丙':'Bing','乙':'Yi','甲':'Jia'};
