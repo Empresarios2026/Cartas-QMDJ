@@ -380,8 +380,8 @@ function getFlyingNum(p, structNum, isYin){
   if(p==='c') return structNum;
   const shift=((structNum-5)%9+9)%9;
   const base=((LS_NUM[p]-1+shift)%9)+1;
-  // Yin 9 special case: verified vs JY Jun19 reference (diff +4 vs Yang 9)
-  if(isYin && structNum===9) return ((base-1+4)%9)+1;
+
+
   return base;
 }
 const FLYING_NUM={}; // kept for backward compat but now computed dynamically
