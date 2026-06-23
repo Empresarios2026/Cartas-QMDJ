@@ -388,8 +388,9 @@ const FLYING_NUM={}; // kept for backward compat but now computed dynamically
 
 function getHourBranch(h){const idx=Math.floor(((h+1)%24)/2);return{br:BR[idx],idx};}
 
-function compute(sk,dk,h,chartType){
-  // chartType: 'h'=hour, 'd'=day, 'm'=month, 'y'=year (true/false legacy = hour/day)
+function compute(sk,dk,h,chartType,overridePillar){
+  // chartType: 'h'=hour, 'd'=day, 'm'=month, 'y'=year
+  // overridePillar: optional pillar string for month/year charts
   if(chartType===true)chartType='h';
   if(chartType===false||!chartType)chartType='d';
   const isYin=sk.startsWith('yin');
@@ -401,9 +402,8 @@ function compute(sk,dk,h,chartType){
   const hStem=(HR_CYCLE[dStem]||HR_CYCLE['甲'])[hIdx];
   const hPillar=hStem+hBr;
   const dPillar=dStem+dBranch;
-  // Month & Year pillars (2026: month from date field, year 丙午)
-  const mp=(typeof MONTH_PILLAR!=='undefined')?MONTH_PILLAR:'甲午';
-  const yp=(typeof YEAR_PILLAR!=='undefined')?YEAR_PILLAR:'丙午';
+  const mp=overridePillar||(typeof MONTH_PILLAR!=='undefined'?MONTH_PILLAR:'甲午');
+  const yp=overridePillar||(typeof YEAR_PILLAR!=='undefined'?YEAR_PILLAR:'丙午');
 
   // Active stem by chart type
   let activeStem, activePillar;
@@ -993,11 +993,33 @@ function autoFillStructure() {
   if (daySelect && DAY_MAP[key]) daySelect.value = key;
 }
 
-// Month & Year pillars + structures (verified vs real Joey Yap/Paola charts)
-// Year 2026 丙午 = Yin 1 | Month Jun 2026 甲午 (Jun5-Jul6) = Yin 7
-const MONTH_PILLAR='甲午';
+// ═══ YEAR STRUCTURE TABLE ══════════════════════
+// Source: QMDJ Month Charts Joey Yap — year pillar → month Yin structure
+const YEAR_STRUCT_MAP={'丙午':'yin7','丁未':'yin4','戊申':'yin1','己酉':'yin7','庚戌':'yin4'};
+const YEAR_PILLAR_MAP={2025:'乙巳',2026:'丙午',2027:'丁未',2028:'戊申',2029:'己酉',2030:'庚戌'};
+
+// ═══ SOLAR MONTH PILLARS 2026 ════════════════
+// Source: Ten Thousand Year Calendar, Five Tigers table
+const MONTH_PILLARS_2026=[
+  [[1,5],'己丑'],[[2,4],'庚寅'],[[3,6],'辛卯'],[[4,4],'壬辰'],
+  [[5,5],'癸巳'],[[6,5],'甲午'],[[7,7],'乙未'],[[8,7],'丙申'],
+  [[9,7],'丁酉'],[[10,8],'戊戌'],[[11,7],'己亥'],[[12,7],'庚子'],
+];
+
+function getMonthPillar(date){
+  const mmdd=[date.getMonth()+1,date.getDate()];
+  const table=MONTH_PILLARS_2026;
+  let pillar=table[0][1];
+  for(let i=table.length-1;i>=0;i--){
+    const[m,d]=table[i][0];
+    if(mmdd[0]>m||(mmdd[0]===m&&mmdd[1]>=d)){pillar=table[i][1];break;}
+  }
+  return pillar;
+}
+
+function getYearPillar(date){return YEAR_PILLAR_MAP[date.getFullYear()]||'丙午';}
+
 const YEAR_PILLAR='丙午';
-const MONTH_STRUCT='yin7';
 const YEAR_STRUCT='yin1';
 
 function plotAll(){
@@ -1005,14 +1027,17 @@ function plotAll(){
   const ts=document.getElementById('iTime').value;
   const dk=document.getElementById('iDay').value;
   const h=parseInt(ts.split(':')[0]);
-  const [yr,mo,dyy]=ds.split('-').map(Number);
+  const[yr,mo,dyy]=ds.split('-').map(Number);
   const dateObj=new Date(yr,mo-1,dyy);
-  const hourStruct=autoStructure(dateObj).key;   // Yuan method
-  const dayStruct=dayStarStructure(dateObj).key;  // calendar daily star
+  const hourStruct=autoStructure(dateObj).key;
+  const dayStruct=dayStarStructure(dateObj).key;
+  const monthPillar=getMonthPillar(dateObj);
+  const yearPillar=getYearPillar(dateObj);
+  const monthStruct=YEAR_STRUCT_MAP[yearPillar]||'yin7';
   document.getElementById('hc').innerHTML=renderChart(ds,h,compute(hourStruct,dk,h,'h'),'h');
   document.getElementById('dc').innerHTML=renderChart(ds,h,compute(dayStruct,dk,h,'d'),'d');
-  document.getElementById('mc').innerHTML=renderChart(ds,h,compute(MONTH_STRUCT,dk,h,'m'),'m');
-  document.getElementById('yc').innerHTML=renderChart(ds,h,compute(YEAR_STRUCT,dk,h,'y'),'y');
+  document.getElementById('mc').innerHTML=renderChart(ds,h,compute(monthStruct,dk,h,'m',monthPillar),'m');
+  document.getElementById('yc').innerHTML=renderChart(ds,h,compute(YEAR_STRUCT,dk,h,'y',yearPillar),'y');
 }
 
 function sw(t){
