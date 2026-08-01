@@ -503,14 +503,16 @@ function renderChart(dateStr,h,data,type){
   const NUM={}; for(const p of ['se','s','sw','e','c','w','ne','n','nw']) NUM[p]=getFlyingNum(p,sNum,isYin);
 
   const yr=parseInt(dateStr.split('-')[0]),mo=parseInt(dateStr.split('-')[1]);
+  const dyForMonth=parseInt(dateStr.split('-')[2]);
   const YR={2025:'乙巳 Yi Si',2026:'丙午 Bing Wu',2027:'丁未 Ding Wei'};
-  // Solar months 2026 (month starts ~5th-7th of gregorian month)
-  // Jan=己丑(prev yr), Feb=庚寅, Mar=辛卯, Apr=壬辰, May=癸巳, Jun=甲午, Jul=乙未, Aug=丙申, Sep=丁酉, Oct=戊戌, Nov=己亥, Dec=庚子
-  const MO={1:'己丑 Ji Chou',2:'庚寅 Geng Yin',3:'辛卯 Xin Mao',4:'壬辰 Ren Chen',5:'癸巳 Gui Si',6:'甲午 Jia Wu',7:'乙未 Yi Wei',8:'丙申 Bing Shen',9:'丁酉 Ding You',10:'戊戌 Wu Xu',11:'己亥 Ji Hai',12:'庚子 Geng Zi'};
+  // Month pillar by SOLAR TERM (changes ~5th-8th), not gregorian month
+  const MONTH_ROMAN={'己丑':'Ji Chou','庚寅':'Geng Yin','辛卯':'Xin Mao','壬辰':'Ren Chen','癸巳':'Gui Si','甲午':'Jia Wu','乙未':'Yi Wei','丙申':'Bing Shen','丁酉':'Ding You','戊戌':'Wu Xu','己亥':'Ji Hai','庚子':'Geng Zi'};
+  const _mpPillar=getMonthPillar(new Date(yr,mo-1,dyForMonth));
+  const monthLabel=_mpPillar+' '+(MONTH_ROMAN[_mpPillar]||'');
 
   let html=`<div class="pillars">
     <div class="pb"><div class="pb-type">Year 年</div><div class="pb-stem">${(YR[yr]||'丙午').split(' ')[0]}</div><div class="pb-en">${(YR[yr]||'丙午 Bing Wu').split(' ').slice(1).join(' ')}</div></div>
-    <div class="pb"><div class="pb-type">Month 月</div><div class="pb-stem">${(MO[mo]||'甲午 Jia Wu').split(' ')[0]}</div><div class="pb-en">${(MO[mo]||'甲午 Jia Wu').split(' ').slice(1).join(' ')}</div></div>
+    <div class="pb"><div class="pb-type">Month 月</div><div class="pb-stem">${monthLabel.split(' ')[0]}</div><div class="pb-en">${monthLabel.split(' ').slice(1).join(' ')}</div></div>
     <div class="pb"><div class="pb-type">Day 日</div><div class="pb-stem">${dStem}${dBranch}</div><div class="pb-en">${dRoman}</div></div>
     <div class="pb"><div class="pb-type">Hour 時</div><div class="pb-stem">${hStem}${hBr}</div><div class="pb-en">${SE_EN[hStem]} ${BR_EN[hBr]}</div></div>
   </div>`;
@@ -1003,9 +1005,9 @@ const YEAR_PILLAR_MAP={2025:'乙巳',2026:'丙午',2027:'丁未',2028:'戊申',2
 // ═══ SOLAR MONTH PILLARS 2026 ════════════════
 // Source: Ten Thousand Year Calendar, Five Tigers table
 const MONTH_PILLARS_2026=[
-  [[1,5],'己丑'],[[2,4],'庚寅'],[[3,6],'辛卯'],[[4,4],'壬辰'],
-  [[5,5],'癸巳'],[[6,5],'甲午'],[[7,7],'乙未'],[[8,7],'丙申'],
-  [[9,7],'丁酉'],[[10,8],'戊戌'],[[11,7],'己亥'],[[12,7],'庚子'],
+  [[1,6],'己丑'],[[2,4],'庚寅'],[[3,6],'辛卯'],[[4,5],'壬辰'],
+  [[5,6],'癸巳'],[[6,6],'甲午'],[[7,7],'乙未'],[[8,8],'丙申'],
+  [[9,8],'丁酉'],[[10,8],'戊戌'],[[11,7],'己亥'],[[12,7],'庚子'],
 ];
 
 function getMonthPillar(date){
