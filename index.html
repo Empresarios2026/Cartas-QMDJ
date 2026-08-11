@@ -262,6 +262,7 @@ body {
   <button class="tab" onclick="sw('m')">🗓 Month</button>
   <button class="tab" onclick="sw('y')">📅 Year</button>
   <button class="tab" onclick="sw('fs')">🏠 Feng Shui</button>
+  <button class="tab" onclick="sw('nt')">🌟 Natal</button>
 </div>
 
 <div class="cs">
@@ -303,6 +304,18 @@ body {
       <button class="btn-plot" onclick="plotFS()">⊕ Plot Feng Shui</button>
     </div>
     <div id="fsc"></div>
+  </div>
+  <div id="pnt" class="cp">
+    <!-- NATAL BIRTH FORM -->
+    <div class="ctrl" style="margin-top:0;border-radius:0 0 10px 10px;border-top:none;">
+      <div class="fg"><label>🎂 Birth Date</label><input type="date" id="ntDate" value="1978-12-16"></div>
+      <div class="fg"><label>🕐 Birth Time</label><input type="time" id="ntTime" value="22:20"></div>
+      <div class="fg"><label>⚧ Sex</label>
+        <select id="ntSex"><option value="F">Female / Mujer</option><option value="M">Male / Hombre</option></select>
+      </div>
+      <button class="btn-copy" style="margin-top:8px;" onclick="plotNatal()">🌟 Generate Natal Chart</button>
+    </div>
+    <div id="ntc"></div>
   </div>
 </div>
 
@@ -1026,6 +1039,62 @@ function getYearPillar(date){return YEAR_PILLAR_MAP[date.getFullYear()]||'丙午
 const YEAR_PILLAR='丙午';
 const YEAR_STRUCT='yin1';
 
+// ═══════════════════════════════════════════════════
+// NATAL CHART (Carta del Destino) — astronomical, any year
+// ═══════════════════════════════════════════════════
+function natal_jdn(y,m,d){const a=Math.floor((14-m)/12);const yy=y+4800-a;const mm=m+12*a-3;return d+Math.floor((153*mm+2)/5)+365*yy+Math.floor(yy/4)-Math.floor(yy/100)+Math.floor(yy/400)-32045;}
+const NATAL_REF=natal_jdn(2000,1,7); // 甲子
+function natal_dayPillar(y,m,d){const idx=(((natal_jdn(y,m,d)-NATAL_REF)%60)+60)%60;return STEMS10[idx%10]+BRANCHES12[idx%12];}
+function natal_toJDE(y,m,d,h){return natal_jdn(y,m,d)-0.5+h/24;}
+function natal_sunLon(jde){const T=(jde-2451545)/36525;let L0=280.46646+36000.76983*T+0.0003032*T*T;const M=357.52911+35999.05029*T-0.0001537*T*T;const Mr=M*Math.PI/180;const C=(1.914602-0.004817*T-0.000014*T*T)*Math.sin(Mr)+(0.019993-0.000101*T)*Math.sin(2*Mr)+0.000289*Math.sin(3*Mr);let lon=L0+C;const omega=125.04-1934.136*T;lon=lon-0.00569-0.00478*Math.sin(omega*Math.PI/180);return ((lon%360)+360)%360;}
+const NATAL_TERMS=[
+  {name:'冬至',lon:270,isYin:false,y:[1,7,4]},{name:'小寒',lon:285,isYin:false,y:[2,8,5]},
+  {name:'大寒',lon:300,isYin:false,y:[3,9,6]},{name:'立春',lon:315,isYin:false,y:[8,5,2]},
+  {name:'雨水',lon:330,isYin:false,y:[9,6,3]},{name:'驚蟄',lon:345,isYin:false,y:[1,7,4]},
+  {name:'春分',lon:0,isYin:false,y:[3,9,6]},{name:'清明',lon:15,isYin:false,y:[4,1,7]},
+  {name:'穀雨',lon:30,isYin:false,y:[5,2,8]},{name:'立夏',lon:45,isYin:false,y:[4,1,7]},
+  {name:'小滿',lon:60,isYin:false,y:[5,2,8]},{name:'芒種',lon:75,isYin:false,y:[6,3,9]},
+  {name:'夏至',lon:90,isYin:true,y:[9,3,6]},{name:'小暑',lon:105,isYin:true,y:[8,2,5]},
+  {name:'大暑',lon:120,isYin:true,y:[7,1,4]},{name:'立秋',lon:135,isYin:true,y:[2,5,8]},
+  {name:'處暑',lon:150,isYin:true,y:[1,4,7]},{name:'白露',lon:165,isYin:true,y:[9,3,6]},
+  {name:'秋分',lon:180,isYin:true,y:[7,1,4]},{name:'寒露',lon:195,isYin:true,y:[6,9,3]},
+  {name:'霜降',lon:210,isYin:true,y:[5,8,2]},{name:'立冬',lon:225,isYin:true,y:[6,9,3]},
+  {name:'小雪',lon:240,isYin:true,y:[5,8,2]},{name:'大雪',lon:255,isYin:true,y:[4,7,1]},
+];
+function natal_getTerm(y,m,d,h){
+  const birthLon=natal_sunLon(natal_toJDE(y,m,d,h));
+  for(const t of NATAL_TERMS){let past=((birthLon-t.lon)%360+360)%360;if(past<15)return t;}
+  return NATAL_TERMS[0];
+}
+const NATAL_LEAD_YUAN={'甲子':'upper','甲午':'upper','己卯':'upper','己酉':'upper','甲寅':'middle','甲申':'middle','己巳':'middle','己亥':'middle','甲辰':'lower','甲戌':'lower','己丑':'lower','己未':'lower'};
+function natal_getLeadDay(y,m,d){for(let i=0;i<=9;i++){const jd=natal_jdn(y,m,d)-i;const idx=(((jd-NATAL_REF)%60)+60)%60;const p=STEMS10[idx%10]+BRANCHES12[idx%12];if(p[0]==='甲'||p[0]==='己')return p;}return '甲子';}
+function natal_structure(y,m,d,h){
+  const term=natal_getTerm(y,m,d,h);
+  const leadDay=natal_getLeadDay(y,m,d);
+  const yuan=NATAL_LEAD_YUAN[leadDay]||'upper';
+  const yuanIdx={upper:0,middle:1,lower:2}[yuan];
+  const structNum=term.y[yuanIdx];
+  return {key:(term.isYin?'yin':'yang')+structNum,struct:structNum,isYin:term.isYin,term:term.name,yuan,leadDay};
+}
+// Hour branch from hour (0-23)
+function natal_hourBranch(h){const idx=Math.floor(((h+1)%24)/2);return idx;}
+// Build a natal chart data object using existing compute()
+function natal_compute(y,m,d,hourNum){
+  const st=natal_structure(y,m,d,hourNum);
+  const dayP=natal_dayPillar(y,m,d);
+  // Build a dayKey for compute() - need the day pillar in the DAY_MAP romanized form
+  // compute() uses dk (romanized). We'll pass the pillar directly via a shim.
+  return {struct:st, dayPillar:dayP};
+}
+
+// Reverse lookup: chinese pillar → DAY_MAP key
+function natal_pillarToKey(pillar){
+  for(const k in DAY_MAP){
+    if(DAY_MAP[k][0]+DAY_MAP[k][1]===pillar) return k;
+  }
+  return 'jiazi';
+}
+
 function plotAll(){
   const ds=document.getElementById('iDate').value;
   const ts=document.getElementById('iTime').value;
@@ -1051,6 +1120,49 @@ function sw(t){
   document.querySelector(`[onclick="sw('${t}')"]`).classList.add('on');
   document.getElementById('p'+t).classList.add('on');
   if(t==='fs' && !document.getElementById('fsc').innerHTML) plotFS();
+  if(t==='nt' && !document.getElementById('ntc').innerHTML) plotNatal();
+}
+
+function plotNatal(){
+  const dateStr=document.getElementById('ntDate').value;
+  const timeStr=document.getElementById('ntTime').value;
+  const sex=document.getElementById('ntSex').value;
+  const [y,m,d]=dateStr.split('-').map(Number);
+  const [hh,mm]=timeStr.split(':').map(Number);
+  const hourNum=hh + mm/60;
+
+  const st=natal_structure(y,m,d,hourNum);
+  const dayP=natal_dayPillar(y,m,d);
+  const dk=natal_pillarToKey(dayP);
+  const data=compute(st.key, dk, hh, 'h');
+
+  // Destiny Palace = where day stem sits in Heaven Plate
+  const dayStem=dayP[0];
+  let destPal=null;
+  for(const p in data.HP){ if(data.HP[p]===dayStem){ destPal=p; break; } }
+
+  // Destiny attributes at that palace
+  const dirMap={se:'SE',s:'S',sw:'SW',e:'E',c:'C',w:'W',ne:'NE',n:'N',nw:'NW'};
+  const destStar=data.SP&&destPal?data.SP[destPal]:null;
+  const destDoor=data.DP&&destPal?data.DP[destPal]:null;
+  const destDeity=data.DEP&&destPal?data.DEP[destPal]:null;
+
+  // Render the natal chart (reuse renderChart) + destiny header
+  let html=`<div class="natal-header" style="padding:12px;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:10px;margin-bottom:10px;color:#fff;">
+    <div style="font-size:1.1rem;font-weight:700;">🌟 Carta del Destino</div>
+    <div style="font-size:.85rem;opacity:.8;">${dateStr} · ${timeStr} · ${sex==='F'?'Mujer':'Hombre'}</div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px;font-size:.85rem;">
+      <div>Palacio del Destino: <b>${destPal?dirMap[destPal]:'?'}</b></div>
+      <div>Tronco del Destino: <b>${dayStem} ${SE_EN[dayStem]||''}</b></div>
+      <div>Estrella: <b>${destStar?destStar.en:'?'}</b></div>
+      <div>Puerta: <b>${destDoor?destDoor.en:'?'}</b></div>
+      <div>Deidad: <b>${destDeity?destDeity.en:'?'}</b></div>
+      <div>Estructura: <b>${st.isYin?'Yin':'Yang'} ${st.struct}</b> (${st.term})</div>
+    </div>
+  </div>`;
+  // Render the full chart using existing renderer
+  html+=renderChart(dateStr, hh, data, 'nt');
+  document.getElementById('ntc').innerHTML=html;
 }
 
 function copyText(){
