@@ -865,14 +865,14 @@ const SOLAR_TERMS = [
   {name:'小暑',start:[2026,7,7],  upper:8,middle:2,lower:5,isYin:true},
   {name:'大暑',start:[2026,7,23], upper:7,middle:1,lower:4,isYin:true},
   {name:'立秋',start:[2026,8,7],  upper:2,middle:5,lower:8,isYin:true},
-  {name:'處暑',start:[2026,8,23], upper:8,middle:5,lower:2,isYin:true},
-  {name:'白露',start:[2026,9,7],  upper:4,middle:7,lower:1,isYin:true},
-  {name:'秋分',start:[2026,9,23], upper:1,middle:7,lower:4,isYin:true},
-  {name:'寒露',start:[2026,10,8], upper:4,middle:1,lower:7,isYin:true},
-  {name:'霜降',start:[2026,10,23],upper:7,middle:1,lower:4,isYin:true},
-  {name:'立冬',start:[2026,11,7], upper:1,middle:4,lower:7,isYin:true},
-  {name:'小雪',start:[2026,11,22],upper:4,middle:7,lower:1,isYin:true},
-  {name:'大雪',start:[2026,12,7], upper:7,middle:4,lower:1,isYin:true},
+  {name:'處暑',start:[2026,8,23], upper:1,middle:4,lower:7,isYin:true},
+  {name:'白露',start:[2026,9,7],  upper:9,middle:3,lower:6,isYin:true},
+  {name:'秋分',start:[2026,9,23], upper:7,middle:1,lower:4,isYin:true},
+  {name:'寒露',start:[2026,10,8], upper:6,middle:9,lower:3,isYin:true},
+  {name:'霜降',start:[2026,10,23],upper:5,middle:8,lower:2,isYin:true},
+  {name:'立冬',start:[2026,11,7], upper:6,middle:9,lower:3,isYin:true},
+  {name:'小雪',start:[2026,11,22],upper:5,middle:8,lower:2,isYin:true},
+  {name:'大雪',start:[2026,12,7], upper:4,middle:7,lower:1,isYin:true},
   {name:'冬至',start:[2026,12,21],upper:1,middle:7,lower:4,isYin:false},
 ];
 
@@ -972,8 +972,8 @@ function autoStructure(date) {
   let activeTerm = term;
   if (nextTermInfo && leadDate) {
     const daysToNextTerm = Math.round((nextTermInfo.start - leadDate) / 86400000);
-    // Lead Day is before the next term AND within 4 days → Ascending Qi → belongs to next term
-    if (daysToNextTerm >= 0 && daysToNextTerm < 5) {
+    // Lead Day is before the next term AND within 5 days → Ascending Qi → belongs to next term
+    if (daysToNextTerm >= 0 && daysToNextTerm <= 5) {
       activeTerm = nextTermInfo.term;
     }
   }
