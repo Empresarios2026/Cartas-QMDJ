@@ -537,6 +537,7 @@ function renderChart(dateStr,h,data,type){
     <div class="ib"><span class="ib-l">Chief / Lead Star</span><span class="ib-v">${chiefPal.toUpperCase()}</span></div>
     <div class="ib"><span class="ib-l">Envoy 直使</span><span class="ib-v">${envoy} · ${envoyPal.toUpperCase()}</span></div>
     <div class="ib"><span class="ib-l">DE 空亡</span><span class="ib-v">${de[0]}/${de[1]}</span></div>
+    ${(type==='d'||type==='m')&&dateStr?(()=>{const[cy,cm,cd]=dateStr.split('-').map(Number);const con=getDayConstellation(new Date(cy,cm-1,cd));return `<div class="ib"><span class="ib-l">Constelación 宿</span><span class="ib-v">${con.es} ${con.zh} ${con.en} #${con.n}</span></div>`;})():''}
     ${fuYin?'<div class="ib"><span class="ib-l alert">⚡ Fu Yin</span><span class="ib-v alert">EP=HP</span></div>':''}
   </div>`;
 
@@ -1026,6 +1027,49 @@ const YEAR_STRUCT_MAP={'丙午':'yin7','丁未':'yin4','戊申':'yin1','己酉':
 const YEAR_CHART_STRUCT_MAP={'乙巳':'yin2','丙午':'yin1','丁未':'yin9','戊申':'yin8','己酉':'yin7','庚戌':'yin6'}; // verified: 乙巳2025=yin2, 丙午2026=yin1
 const YEAR_PILLAR_MAP={2025:'乙巳',2026:'丙午',2027:'丁未',2028:'戊申',2029:'己酉',2030:'庚戌'};
 
+// ═══ 28 CONSTELLATIONS (28 Xiu 二十八宿) ═══════════
+// Day constellation advances +1/day in the 28-cycle.
+// Anchor validated vs Master Paola: Jul 27 2026 = #5 Heart (Corazón).
+// Order: East(1-7) South(8-14) West(15-21) North(22-28), Joey Yap standard.
+const CONSTELLATIONS_28 = [
+  {n:1, zh:'角', en:'Horn',     es:'Cuerno'},
+  {n:2, zh:'亢', en:'Neck',     es:'Cuello'},
+  {n:3, zh:'氐', en:'Foundation',es:'Fundamento'},
+  {n:4, zh:'房', en:'House',    es:'Casa'},
+  {n:5, zh:'心', en:'Heart',    es:'Corazón'},
+  {n:6, zh:'尾', en:'Tail',     es:'Cola'},
+  {n:7, zh:'箕', en:'Basket',   es:'Canasta'},
+  {n:8, zh:'井', en:'Well',     es:'Pozo'},
+  {n:9, zh:'鬼', en:'Ghost',    es:'Fantasma'},
+  {n:10,zh:'柳', en:'Willow',   es:'Sauce'},
+  {n:11,zh:'星', en:'Star',     es:'Estrella'},
+  {n:12,zh:'張', en:'Bow',      es:'Arco'},
+  {n:13,zh:'翼', en:'Wing',     es:'Ala'},
+  {n:14,zh:'軫', en:'Carriage', es:'Carruaje'},
+  {n:15,zh:'奎', en:'Astride',  es:'Astride'},
+  {n:16,zh:'婁', en:'Mound',    es:'Montículo'},
+  {n:17,zh:'胃', en:'Stomach',  es:'Estómago'},
+  {n:18,zh:'昴', en:'Pleiades', es:'Pléyades'},
+  {n:19,zh:'畢', en:'Net',      es:'Red'},
+  {n:20,zh:'觜', en:'Beak',     es:'Pico'},
+  {n:21,zh:'參', en:'Orion',    es:'Orión'},
+  {n:22,zh:'斗', en:'Dipper',   es:'Osa'},
+  {n:23,zh:'牛', en:'Ox',       es:'Buey'},
+  {n:24,zh:'女', en:'Maiden',   es:'Doncella'},
+  {n:25,zh:'虛', en:'Void',     es:'Vacío'},
+  {n:26,zh:'危', en:'Danger',   es:'Peligro'},
+  {n:27,zh:'室', en:'Room',     es:'Habitación'},
+  {n:28,zh:'壁', en:'Wall',     es:'Pared'},
+];
+const CONSTEL_ANCHOR = new Date(2026,6,27); // Jul 27 2026
+const CONSTEL_ANCHOR_NUM = 5;               // = #5 Heart (validated vs Paola)
+function getDayConstellation(date) {
+  const diff = Math.round((date - CONSTEL_ANCHOR) / 86400000);
+  const idx = (((CONSTEL_ANCHOR_NUM - 1 + diff) % 28) + 28) % 28; // 0-based
+  return CONSTELLATIONS_28[idx];
+}
+
+
 // ═══ SOLAR MONTH PILLARS 2026 ════════════════
 // Source: Ten Thousand Year Calendar, Five Tigers table
 const MONTH_PILLARS_2026=[
@@ -1211,7 +1255,13 @@ function copyText(){
   else txt+='Tallo del dia: '+SE_R[d.dStem]+'\n';
   txt+='Lead Stem: '+SE_R[d.leadStem]+' | Envoy: '+d.envoy+' Door '+d.envoyPal.toUpperCase()+'\n';
   txt+='DE: '+(BR_R[d.de[0]]||'-')+' / '+(BR_R[d.de[1]]||'-')+' | JIA: '+d.chiefPal.toUpperCase()+'\n';
-  txt+='Estructura: '+pol+' '+d.sNum+(d.fuYin?' - Fu Yin':'')+'\n\n';
+  txt+='Estructura: '+pol+' '+d.sNum+(d.fuYin?' - Fu Yin':'')+'\n';
+  // Day constellation (28 Xiu) - shown for day and month charts
+  if(cType==='d'||cType==='m'){
+    const con=getDayConstellation(cDate);
+    txt+='Constelación: '+con.es+' '+con.zh+' '+con.en+' (#'+con.n+')\n';
+  }
+  txt+='\n';
 
   txt+='Dir | # | Cielo/Tierra | Estrella | Puerta | Deidad | Formaciones\n';
   const dirs=['se','s','sw','e','w','ne','n','nw'];
