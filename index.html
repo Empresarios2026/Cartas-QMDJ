@@ -947,8 +947,8 @@ const DAY_YIN_END   = new Date(2026,11,21);
 // Anchors (validated): Yin period 2026 → Aug 19 = 8. Yang uses the Jun-solstice-to-here bridge.
 const DAY_NUM_YIN_ANCHOR = new Date(2026,7,19); // Aug 19 2026
 const DAY_NUM_YIN_VALUE  = 8;                    // = Yin 8 (validated vs JY + Paola)
-const DAY_NUM_YANG_ANCHOR = new Date(2025,11,21);// Winter solstice 2025 (Yang start)
-const DAY_NUM_YANG_VALUE  = 1;                   // TODO: validate Yang anchor vs a real Yang day chart
+const DAY_NUM_YANG_ANCHOR = new Date(2026,5,18); // Jun 18 2026
+const DAY_NUM_YANG_VALUE  = 9;                   // = Yang 9 (validated vs Paola: Jun12=Y3, Jun18=Y9, +1/day)
 
 function dayStarStructure(date) {
   const isYin = (date >= DAY_YIN_START && date < DAY_YIN_END);
