@@ -535,7 +535,7 @@ function renderChart(dateStr,h,data,type){
     <div class="ib"><span class="ib-l">Flow</span><span class="ib-v ${isYin?'yin':'yang'}">${pol} ${sNum}</span></div>
     <div class="ib"><span class="ib-l">Lead Stem 符首</span><span class="ib-v">${leadStem} ${SE_EN[leadStem]} · ${leadEarthPal.toUpperCase()}</span></div>
     <div class="ib"><span class="ib-l">Chief / Lead Star</span><span class="ib-v">${chiefPal.toUpperCase()}</span></div>
-    <div class="ib"><span class="ib-l">Envoy 直使</span><span class="ib-v">${envoy} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="ib"><span class="ib-l">Envoy 直使</span><span class="ib-v">${envoy} · ${envoyPal.toUpperCase()}</span></div>
     <div class="ib"><span class="ib-l">DE 空亡</span><span class="ib-v">${de[0]}/${de[1]}</span></div>
     ${fuYin?'<div class="ib"><span class="ib-l alert">⚡ Fu Yin</span><span class="ib-v alert">EP=HP</span></div>':''}
   </div>`;
@@ -548,7 +548,7 @@ function renderChart(dateStr,h,data,type){
     const isCenter=p.id==='c';
     let mk='';
     if(p.id===chiefPal)mk+='<span class="mk mk-ls">Lead Star</span>';
-    if(p.id===leadEarthPal)mk+='<span class="mk mk-envoy">Envoy</span>';
+    if(p.id===envoyPal)mk+='<span class="mk mk-envoy">Envoy</span>';
     if(dePals.includes(p.id))mk+='<span class="mk mk-de">DE</span>';
     html+=`<div class="pal ${isCenter?'center':''}">
       <div class="pal-markers">${mk}</div>
@@ -573,7 +573,7 @@ function renderChart(dateStr,h,data,type){
   html+=`<div class="datos"><h3>Key Data</h3><div class="datos-grid">
     <div class="dr"><span class="dl">Lead Stem 符首:</span><span class="dv">${leadStem} ${SE_EN[leadStem]} · ${leadEarthPal.toUpperCase()}</span></div>
     <div class="dr"><span class="dl">Lead Star 直符:</span><span class="dv">${SP[chiefPal]?SP[chiefPal].zh+' '+SP[chiefPal].en:'—'} · ${chiefPal.toUpperCase()}</span></div>
-    <div class="dr"><span class="dl">Envoy 直使:</span><span class="dv">${envoy} · ${leadEarthPal.toUpperCase()}</span></div>
+    <div class="dr"><span class="dl">Envoy 直使:</span><span class="dv">${envoy} · ${envoyPal.toUpperCase()}</span></div>
     <div class="dr"><span class="dl">DE 空亡:</span><span class="dv">${de[0]}/${de[1]} (${dePals.map(p=>p.toUpperCase()).join(', ')})</span></div>
     <div class="dr"><span class="dl">Fu Yin 伏吟:</span><span class="dv">${fuYin?'✅ Yes':'No'}</span></div>
     <div class="dr"><span class="dl">Structure:</span><span class="dv">${pol} ${sNum} Ju</span></div>
