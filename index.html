@@ -938,53 +938,28 @@ const DAY_YIN_STAR = 9;
 const DAY_YIN_START = new Date(2026,5,19);
 const DAY_YIN_END   = new Date(2026,11,21);
 
-// DAY chart structure — validated vs Joey Yap AND Master Paola (Aug 19 2026 = Yin 8).
-// Rule: yuan by DATE-POSITION within the current solar term (5-day blocks from term start),
-// EXCEPT near solstices (夏至/冬至) where a 符頭 (甲子/己卯/甲午/己酉) that precedes the
-// solstice by ≤9 days triggers Ascending Qi 超神 — the new term starts early from that 符頭.
-// This differs from the HOUR chart (autoStructure), which uses 符頭 yuan-type + ascending qi
-// for ALL terms. Validated points: Jun 19 = Yin 9 (夏至 upper asc), Aug 19 = Yin 8 (立秋 lower).
+// DAY chart structure — uses the continuous DAILY number (日星), NOT the yuan structure.
+// Validated vs Joey Yap + Master Paola: Aug 19 2026 = Yin 8, Aug 20 2026 = Yin 7 (−1/day).
+// The daily number advances +1/day in Yang periods and −1/day in Yin periods,
+// flipping direction at each solstice (winter solstice → Yang, summer solstice → Yin).
+// This is DIFFERENT from the HOUR chart (autoStructure, which uses 符頭 yuan + Ascending Qi).
+// Anchors (validated): Yin period 2026 → Aug 19 = 8. Yang uses the Jun-solstice-to-here bridge.
+const DAY_NUM_YIN_ANCHOR = new Date(2026,7,19); // Aug 19 2026
+const DAY_NUM_YIN_VALUE  = 8;                    // = Yin 8 (validated vs JY + Paola)
+const DAY_NUM_YANG_ANCHOR = new Date(2025,11,21);// Winter solstice 2025 (Yang start)
+const DAY_NUM_YANG_VALUE  = 1;                   // TODO: validate Yang anchor vs a real Yang day chart
+
 function dayStarStructure(date) {
-  // Current term by date
-  let term=null;
-  for(let i=SOLAR_TERMS.length-1;i>=0;i--){
-    const [y,m,d]=SOLAR_TERMS[i].start;
-    if(date>=new Date(y,m-1,d)){term=SOLAR_TERMS[i];break;}
+  const isYin = (date >= DAY_YIN_START && date < DAY_YIN_END);
+  let s;
+  if (isYin) {
+    const diff = Math.round((date - DAY_NUM_YIN_ANCHOR) / 86400000);
+    s = ((DAY_NUM_YIN_VALUE - 1 - diff) % 9 + 9*1000) % 9 + 1;
+  } else {
+    const diff = Math.round((date - DAY_NUM_YANG_ANCHOR) / 86400000);
+    s = ((DAY_NUM_YANG_VALUE - 1 + diff) % 9 + 9*1000) % 9 + 1;
   }
-  if(!term){ // fallback
-    const isYin=(date>=DAY_YIN_START&&date<DAY_YIN_END);
-    return {struct:1,isYin,key:(isYin?'yin':'yang')+'1',term:'?'};
-  }
-  const yuanKeys=['upper','middle','lower'];
-
-  // Check Ascending Qi at solstice terms (夏至/冬至)
-  let nextTerm=null;
-  for(let i=0;i<SOLAR_TERMS.length;i++){
-    const [y,m,d]=SOLAR_TERMS[i].start;
-    const ts=new Date(y,m-1,d);
-    if(ts>date){nextTerm={term:SOLAR_TERMS[i],start:ts};break;}
-  }
-  if(nextTerm && (nextTerm.term.name==='夏至'||nextTerm.term.name==='冬至')){
-    // Find 符頭 (甲/己 day) on/before date
-    const ld=getLeadDay(date);
-    if(ld && ld.date){
-      const upperFutou=['甲子','甲午','己卯','己酉'];
-      const gap=Math.round((nextTerm.start - ld.date)/86400000);
-      if(upperFutou.includes(ld.pillar) && gap>=0 && gap<=9){
-        // Ascending Qi: next (solstice) term starts from this 符頭
-        const daysFromFutou=Math.round((date - ld.date)/86400000);
-        const yuan=yuanKeys[Math.min(Math.floor(daysFromFutou/5),2)];
-        const nt=nextTerm.term;
-        return {struct:nt[yuan],isYin:nt.isYin,key:(nt.isYin?'yin':'yang')+nt[yuan],term:nt.name,yuan};
-      }
-    }
-  }
-
-  // Normal: yuan by date-position within current term
-  const [ty,tm,td]=term.start;
-  const daysIn=Math.round((date - new Date(ty,tm-1,td))/86400000);
-  const yuan=yuanKeys[Math.min(Math.floor(daysIn/5),2)];
-  return {struct:term[yuan],isYin:term.isYin,key:(term.isYin?'yin':'yang')+term[yuan],term:term.name,yuan};
+  return { struct: s, isYin, key: (isYin?'yin':'yang')+s, term:'(daily)' };
 }
 
 // HOUR chart structure = Yuan (Zhi Run) method
