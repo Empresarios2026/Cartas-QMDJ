@@ -979,13 +979,16 @@ function autoStructure(date) {
     return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s, term:'?' };
   }
 
-  // Check Ascending Qi 超神: does the Lead Day fall before the NEXT term, within <5 days?
+  // Check Ascending Qi 超神: an UPPER-type 符頭 (甲子/甲午/己卯/己酉) that falls before the
+  // NEXT term start already belongs to that next term's Upper Yuan. Upper 符頭 anchor a term's
+  // upper yuan; when one precedes the next term (within ~9 days), the qi has "ascended" early.
+  // Validated: Aug 19 (甲子, gap 5)→處暑, Sep 20 (甲午, gap 6)→秋分. Lower/middle leads don't trigger.
   const nextTermInfo = getNextSolarTerm(date);
   let activeTerm = term;
-  if (nextTermInfo && leadDate) {
+  const UPPER_FUTOU = ['甲子','甲午','己卯','己酉'];
+  if (nextTermInfo && leadDate && UPPER_FUTOU.includes(leadDay)) {
     const daysToNextTerm = Math.round((nextTermInfo.start - leadDate) / 86400000);
-    // Lead Day is before the next term AND within 5 days → Ascending Qi → belongs to next term
-    if (daysToNextTerm >= 0 && daysToNextTerm <= 5) {
+    if (daysToNextTerm >= 0 && daysToNextTerm <= 9) {
       activeTerm = nextTermInfo.term;
     }
   }
