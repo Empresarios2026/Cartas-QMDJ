@@ -963,40 +963,41 @@ function dayStarStructure(date) {
   return { struct: s, isYin, key: (isYin?'yin':'yang')+s, term:'(daily)' };
 }
 
-// HOUR chart structure = Yuan (Zhi Run) method
-// Ascending Qi 超神: if Lead Day falls before the next term start by <5 days,
-// it already belongs to that next term's Upper Yuan → use next term.
+// HOUR chart structure = Yuan (Zhi Run / 超神接氣) method.
+// The Lead Day (符頭) anchors a yuan. The correct TERM is the one whose expected
+// yuan-start date (term start + yuanType*5 days) is closest to the Lead Day.
+// This is the full Ascending Qi / Descending Qi rule, validated vs real JY charts:
+// Jun19=夏至u(9), Jun25=夏至m(3), Jul1=夏至l(6), Aug1=大暑l(4), Aug11=立秋m(5),
+// Aug19=處暑u(1), Sep20=秋分u(7), Oct7=寒露m(9).
 function autoStructure(date) {
   const leadDayResult = getLeadDay(date);
   const leadDay = leadDayResult ? leadDayResult.pillar : null;
   const leadDate = leadDayResult ? leadDayResult.date : null;
 
-  const term = getSolarTerm(date);
-  if (!term) {
+  if (!leadDay || !leadDate) {
     const yang = isYangPeriod(date);
     const diff = Math.round((date - ANCHOR_DATE) / 86400000);
     let s = ((ANCHOR_STRUCT + diff - 1) % 9 + 9) % 9 + 1;
     return { struct: s, isYin: !yang, key: (yang?'yang':'yin')+s, term:'?' };
   }
 
-  // Check Ascending Qi 超神: an UPPER-type 符頭 (甲子/甲午/己卯/己酉) that falls before the
-  // NEXT term start already belongs to that next term's Upper Yuan. Upper 符頭 anchor a term's
-  // upper yuan; when one precedes the next term (within ~9 days), the qi has "ascended" early.
-  // Validated: Aug 19 (甲子, gap 5)→處暑, Sep 20 (甲午, gap 6)→秋分. Lower/middle leads don't trigger.
-  const nextTermInfo = getNextSolarTerm(date);
-  let activeTerm = term;
-  const UPPER_FUTOU = ['甲子','甲午','己卯','己酉'];
-  if (nextTermInfo && leadDate && UPPER_FUTOU.includes(leadDay)) {
-    const daysToNextTerm = Math.round((nextTermInfo.start - leadDate) / 86400000);
-    if (daysToNextTerm >= 0 && daysToNextTerm <= 9) {
-      activeTerm = nextTermInfo.term;
-    }
+  const yuanName = LEAD_DAY_YUAN[leadDay] || 'upper';
+  const yuanIdx = {upper:0, middle:1, lower:2}[yuanName];
+  const leadJd = Math.round(leadDate.getTime()/86400000);
+
+  // Find the term whose expected yuan-start (start + yuanIdx*5) is closest to the Lead Day
+  let best = null, bestDiff = 1e9;
+  for (const t of SOLAR_TERMS) {
+    const [y,m,d] = t.start;
+    const termJd = Math.round(new Date(y,m-1,d).getTime()/86400000);
+    const expected = termJd + yuanIdx*5;
+    const diff = Math.abs(leadJd - expected);
+    if (diff < bestDiff) { bestDiff = diff; best = t; }
   }
 
-  const yuan = leadDay ? (LEAD_DAY_YUAN[leadDay] || 'upper') : 'upper';
-  const s = activeTerm[yuan];
-  return { struct: s, isYin: activeTerm.isYin, key: (activeTerm.isYin?'yin':'yang')+s,
-           term: activeTerm.name, yuan, leadDay: leadDay||'?' };
+  const s = best[yuanName];
+  return { struct: s, isYin: best.isYin, key: (best.isYin?'yin':'yang')+s,
+           term: best.name, yuan: yuanName, leadDay };
 }
 
 // Auto-fill structure when date changes
